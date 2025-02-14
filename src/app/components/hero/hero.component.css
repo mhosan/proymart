@@ -1,0 +1,10 @@
+.imagen {
+  background-image: url('/assets/images/img03.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 400px;
+  /* Fondo oscuro para mejorar el contraste del texto */
+  background-color: rgba(0, 0, 0, 0.5); /* Ajusta la opacidad (0.5) según sea necesario */
+  color: black; /* Texto blanco para contrastar con el fondo oscuro */
+  padding: 100px 0;
+}
