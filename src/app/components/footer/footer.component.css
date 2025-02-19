@@ -1,0 +1,27 @@
+
+  /* Personalización para pantallas grandes */
+@media (min-width: 1900px) {
+    .sticky {
+        position: relative;
+        bottom: -55px; /* Pega el div al fondo */
+      }
+   
+}
+  
+  /* Personalización para pantallas medianas */
+  @media (min-width: 1440px) and (max-width: 1440px) {
+    .sticky {
+        position: relative;
+        bottom: -12px; /* Pega el div al fondo */
+      }
+    
+}
+  
+  /* Personalización para dispositivos móviles */
+  @media (max-width: 767px) {
+    .sticky {
+        position: relative;
+        bottom: 0; /* Pega el div al fondo */
+      }
+    
+}
