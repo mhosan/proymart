@@ -1,0 +1,20 @@
+/* app.component.css */
+:host {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
+}
+
+app-header {
+    flex: 0 0 auto; /* El header no crece ni se encoge, usa su tamaño natural */
+}
+
+
+main {
+    flex: 1 0 auto;
+    overflow-y: auto;
+}
+
+app-footer {
+    flex: 0 0 auto; /* El footer no crece ni se encoge, usa su tamaño natural */
+}

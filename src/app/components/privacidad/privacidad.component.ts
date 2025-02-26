@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from '../../../environments/environment'
 
 @Component({
   selector: 'app-privacidad',
@@ -8,5 +9,5 @@ import { Component } from '@angular/core';
   styleUrl: './privacidad.component.css'
 })
 export class PrivacidadComponent {
-
+  appName = environment.appName;
 }
