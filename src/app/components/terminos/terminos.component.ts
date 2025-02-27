@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from '../../../environments/environment'
 
 @Component({
   selector: 'app-terminos',
@@ -8,5 +9,5 @@ import { Component } from '@angular/core';
   styleUrl: './terminos.component.css'
 })
 export class TerminosComponent {
-
+  appName = environment.appName;
 }
