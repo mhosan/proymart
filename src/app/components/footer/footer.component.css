@@ -3,7 +3,7 @@
 @media (min-width: 1900px) {
     .sticky {
         position: relative;
-        bottom: -55px; /* Pega el div al fondo */
+        bottom: 1vh; /* Pega el div al fondo */
       }
    
 }
@@ -12,7 +12,7 @@
   @media (min-width: 1440px) and (max-width: 1440px) {
     .sticky {
         position: relative;
-        bottom: -12px; /* Pega el div al fondo */
+        bottom: 1px; /* Pega el div al fondo */
       }
     
 }
