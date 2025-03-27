@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    appName: 'Prop Advisors' 
+    appName: 'Dato Urbano' 
 };
