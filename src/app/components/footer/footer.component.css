@@ -4,8 +4,7 @@
     .sticky {
         position: relative;
         bottom: 1vh; /* Pega el div al fondo */
-      }
-   
+      } 
 }
   
   /* Personalización para pantallas medianas */
@@ -14,7 +13,14 @@
         position: relative;
         bottom: 1px; /* Pega el div al fondo */
       }
-    
+}
+
+/* Personalización para notebooks 1366 X 768*/
+  @media (min-width: 1366px) and (max-width: 1366px) {
+    .sticky {
+        position: relative;
+        bottom: 5px; /* Pega el div al fondo */
+      }
 }
   
   /* Personalización para dispositivos móviles */
@@ -23,5 +29,4 @@
         position: relative;
         bottom: 0; /* Pega el div al fondo */
       }
-    
 }
