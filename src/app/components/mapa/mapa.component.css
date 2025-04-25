@@ -7,15 +7,15 @@
  */
 :host {
     display: block;
-    height: 60vh; 
-    width: 99%; 
+    height: 60vh;
+    width: 99%;
     margin-top: 50px;
     margin-left: 4px;
 }
 
-#map { 
+#map {
     height: 112%;
     width: 100%;
     margin-left: 3px;
-} 
-/*height: calc(100vh - 60px);  Ajusta 60px según sea necesario */
+}
+

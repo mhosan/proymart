@@ -5,3 +5,16 @@ section {
     margin-top: 1vh;
     height: 75vh;
 }
+
+.leaflet-control.leaflet-control-layers,
+.leaflet-control .leaflet-control-layers,
+.leaflet-top .leaflet-control .leaflet-control-layers {
+  background-color: tomato !important;
+}
+
+.leaflet-control-layers-expanded {
+  max-height: 150px !important;
+  width: 180px !important;
+  overflow-y: auto !important;
+  padding: 6px 10px !important;
+}
