@@ -7,6 +7,7 @@ import { CtaComponent } from './components/cta/cta.component';
 import { PrivacidadComponent } from './components/privacidad/privacidad.component';
 import { TerminosComponent } from './components/terminos/terminos.component';
 import { AdminComponent } from './components/admin/admin.component';
+import { MapaComponent } from './components/mapa/mapa.component';
 
 export const routes: Routes = [
   { path: '', component: HeroComponent },
@@ -17,5 +18,6 @@ export const routes: Routes = [
   { path: 'privacidad', component: PrivacidadComponent },
   { path: 'terminos', component: TerminosComponent},
   { path: 'admin', component: AdminComponent},
+  { path: 'mapa', component: MapaComponent },
   { path: '**', redirectTo: '' }
 ];
