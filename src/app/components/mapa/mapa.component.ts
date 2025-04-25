@@ -18,20 +18,33 @@ const leafletAssets = `${normalizedBaseHref}assets/leaflet/`;
   styleUrl: './mapa.component.css'
 })
 export class MapaComponent implements OnInit {
-  ngOnInit(): void {
+    private map!: L.Map;
+    ngOnInit(): void {
     this.initMap();
   }
 
   private initMap(): void {
-    //const map = L.map('map').setView([-34.6037, -58.3816], 13); // Buenos Aires
+    this.map = L.map('map').setView([-34.6037, -58.3816], 13); // Buenos Aires
 
-    /* L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Capa base de Google Satellite
+    const googleSat = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+      maxZoom: 19,
+      attribution: '© Google Maps'
+    });
+
+    // Capa base de OpenStreetMap
+    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map); */
+    });
 
-   /*  L.marker([-34.6037, -58.3816]).addTo(map)
-      .bindPopup('Buenos Aires')
-      .openPopup(); */
+    // Agregar Google Satellite por defecto
+    googleSat.addTo(this.map);
+
+    // Control de capas
+    L.control.layers({
+      'Google Satellite': googleSat,
+      'OpenStreetMap': osm
+    }).addTo(this.map);
   }
 }

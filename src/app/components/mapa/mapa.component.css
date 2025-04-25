@@ -1,6 +1,21 @@
-/* #map { 
-    height: 50vh;
-    width: 50%;
-    margin-left: 10px;
+/*  #map { 
+    height: 100%;
+    width: 99%;
+    margin-left: 7px;
     background-color: chartreuse; 
-} */
+}  
+ */
+:host {
+    display: block;
+    height: 60vh; 
+    width: 99%; 
+    margin-top: 50px;
+    margin-left: 4px;
+}
+
+#map { 
+    height: 112%;
+    width: 100%;
+    margin-left: 3px;
+} 
+/*height: calc(100vh - 60px);  Ajusta 60px según sea necesario */
