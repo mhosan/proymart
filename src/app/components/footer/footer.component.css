@@ -20,7 +20,7 @@
     .sticky {
         position: relative;
         bottom: 5px; /* Pega el div al fondo */
-        /*background-color: lightgray;*/
+        /* background-color: rgb(136, 30, 30); */
       }
 }
   
