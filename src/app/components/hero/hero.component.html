@@ -1,4 +1,3 @@
-
 <section class="text-center" id="hero">
   
   <article class="container contenido">
@@ -6,9 +5,16 @@
     <p class="lead fw-bold mb-4">Asesoramiento experto y datos precisos para tus proyectos inmobiliarios. Toma decisiones
       informadas y maximiza tus inversiones.</p>
     <div>
-      <button class="btn btn-primary btn-sm me-2">Comienza gratis</button>
-      <button class="btn btn-primary btn-sm">Conoce más</button>
+      <button class="btn btn-primary btn-sm me-2" (click)="mostrarAlerta()">Comienza gratis</button>
+      <button class="btn btn-primary btn-sm" (click)="mostrarAlerta()">Conoce más</button>
     </div>
   </article>
+
+  <div *ngIf="mostrarCard" class="card mostrar-card-z mx-auto mt-3" style="max-width: 22rem;">
+    <div class="card-body text-center">
+      <h5 class="card-title">En construcción...</h5>
+      <button class="btn btn-secondary btn-sm mt-2" (click)="cerrarCard()">Cerrar</button>
+    </div>
+  </div>
 
 </section>
