@@ -40,30 +40,30 @@ export class MapaComponent implements OnInit {
 
     // Capa base de Google Satellite
     const googleSat = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-      maxZoom: 19,
+      maxZoom: 21,
       attribution: '© Google Maps'
     });
 
     // Capa base de OpenStreetMap
     const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
+      maxZoom: 21,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
     //-----------------------------------------------------------------
     this.googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
-        maxZoom: 20,
+        maxZoom: 21,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
         detectRetina: true
       });
       //-----------------------------------------------------------------
   
       //-----------------------------------------------------------------
-      this.osm2 = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 20 });
+      this.osm2 = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 21 });
       //-----------------------------------------------------------------
   
       //-----------------------------------------------------------------
       this.argenMap = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png', {
-        minZoom: 1, maxZoom: 20
+        minZoom: 1, maxZoom: 21
       });
   
       //esri world topo map-----------------------------------------------------------------
@@ -74,7 +74,7 @@ export class MapaComponent implements OnInit {
   
       //-----------------------------------------------------------------
       this.googleMaps = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-        maxZoom: 20,
+        maxZoom: 21,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
         detectRetina: true
       });
@@ -102,11 +102,18 @@ export class MapaComponent implements OnInit {
     var baseMaps = {
         "OpenStreetMap": osm,
         "Google Satelital": googleSat,
+        "Google Maps": this.googleMaps,
+        "Google Híbrido": this.googleHybrid,
         "ESRI Satelital": this.esriSat,
+        "ESRI Topo": this.openmap,
+        "OpenStreetMap 2": this.osm2,
+        "Terrestris OSM": this.wmsTerrestrisOsm,
+        "Terrestris Topo": this.wmsTerrestrisTopo
     };
     
     var overlayMaps = {
-        "Transportes": this.esriTransportes
+        "Transportes": this.esriTransportes,
+       
     };
     // Control de capas
     L.control.layers(baseMaps, overlayMaps).addTo(this.map);
