@@ -1,0 +1,38 @@
+<div class="container mt-10">
+  <h2>Probar LLM Service</h2>
+  <div class="mb-3">
+    <label for="promptInput" class="form-label">Prompt (Default: ¿Cuantos términos tiene la serie de Fibonacci?):</label>
+    <input id="promptInput" type="text" class="form-control" [(ngModel)]="inputData" placeholder="Escribe tu mensaje...">
+  </div>
+  <div class="mb-3 row">
+    <div class="col">
+      <label for="modelInput" class="form-label">Model:(Default: mistralai/mistral-7b-instruct:free)</label>
+      <select id="modelInput" class="form-select" [(ngModel)]="model">
+        <option value="mistralai/mistral-nemo:free">mistralai/mistral-nemo:free</option>
+        <option value="microsoft/mai-ds-r1:free">microsoft/mai-ds-r1:free</option>
+        <option value="meta-llama/llama-4-maverick:free">meta-llama/llama-4-maverick:free</option>
+        <option value="google/gemini-2.0-flash-exp:free">google/gemini-2.0-flash-exp:free</option>
+        <option value="microsoft/phi-4-reasoning-plus:free">microsoft/phi-4-reasoning-plus:free</option>
+        <option value="deepseek/deepseek-chat-v3-0324:free">deepseek/deepseek-chat-v3-0324:free</option>
+      </select>
+    </div>
+    <div class="col">
+      <label for="maxTokensInput" class="form-label">Max Tokens:</label>
+      <input id="maxTokensInput" type="number" class="form-control" [(ngModel)]="max_tokens">
+    </div>
+    <div class="col">
+      <label for="roleInput" class="form-label">Role:</label>
+      <input id="roleInput" type="text" class="form-control" [(ngModel)]="role">
+    </div>
+    <div class="col">
+      <label for="providerSortInput" class="form-label">Provider Sort:</label>
+      <input id="providerSortInput" type="text" class="form-control" [(ngModel)]="providerSort">
+    </div>
+  </div>
+  <button class="btn btn-primary" (click)="enviar()" [disabled]="loading">Enviar</button>
+  <div class="mt-3">
+    <label for="resultBox" class="form-label">Respuesta:</label>
+    <textarea id="resultBox" class="form-control" rows="5" [value]="resultado" readonly></textarea>
+  </div>
+  <div *ngIf="loading" class="mt-2 text-info">Cargando...</div>
+</div>
