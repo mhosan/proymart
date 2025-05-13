@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SupabaseService } from '../services/supabase.service';
+import { SupabaseService } from '../../services/supabase.service';
 
 @Component({
   selector: 'app-auth',
@@ -15,6 +15,7 @@ export class AuthComponent {
   password: string = '';
   isLogin: boolean = true;
   errorMessage: string = '';
+  @Output() authSuccess = new EventEmitter<void>();
 
   constructor(private supabaseService: SupabaseService) {}
 
@@ -26,6 +27,7 @@ export class AuthComponent {
         await this.supabaseService.signUp(this.email, this.password);
       }
       this.errorMessage = '';
+      this.authSuccess.emit(); // Emitir evento al autenticarse correctamente
     } catch (error: any) {
       if (
         error?.name === 'NavigatorLockAcquireTimeoutError' ||
