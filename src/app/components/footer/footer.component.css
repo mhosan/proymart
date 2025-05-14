@@ -1,9 +1,17 @@
 
-  /* Personalización para pantallas grandes */
+.sticky {
+    position: relative;
+    top: -0.5vh;
+    bottom: 0; /* Default bottom, overridden by media queries */
+    font-size: smaller; /* Making the font size smaller */
+}
+
 @media (min-width: 1900px) {
     .sticky {
         position: relative;
         bottom: 1vh; /* Pega el div al fondo */
+        /*background-color: rgb(136, 30, 30);*/
+        font-size: smaller; /* Making the font size smaller */
       } 
 }
   
@@ -11,7 +19,9 @@
   @media (min-width: 1440px) and (max-width: 1440px) {
     .sticky {
         position: relative;
-        bottom: 1px; /* Pega el div al fondo */
+        bottom: 40px; /* Pega el div al fondo */
+        /*background-color: rgb(136, 30, 30);*/
+        font-size: smaller; /* Making the font size smaller */
       }
 }
 
@@ -21,6 +31,7 @@
         position: relative;
         bottom: 5px; /* Pega el div al fondo */
         /* background-color: rgb(136, 30, 30); */
+        font-size: smaller; /* Making the font size smaller */
       }
 }
   
@@ -29,5 +40,6 @@
     .sticky {
         position: relative;
         bottom: 0; /* Pega el div al fondo */
+        font-size: smaller; /* Making the font size smaller */
       }
 }

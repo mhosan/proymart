@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-js'
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -18,7 +18,7 @@ export class SupabaseService {
     );
 
     // Check for existing session
-    this.supabase.auth.getSession().then(({ data: { session } }) => {
+    this.supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
       this.userSubject.next(session?.user ?? null);
     });
 
