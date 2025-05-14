@@ -2,4 +2,4 @@
 deployment:
  tasks:
  - export DEPLOYPATH=/home/datourbanocom/public_html/
- - /bin/cp -R proymart/docs/* $DEPLOYPATH
+ - /bin/cp -R /proymart/docs/* $DEPLOYPATH
