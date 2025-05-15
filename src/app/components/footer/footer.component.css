@@ -1,15 +1,16 @@
 
 .sticky {
     position: relative;
-    top: -0.5vh;
-    bottom: 0; /* Default bottom, overridden by media queries */
+    padding-top: 0.5vh;
     font-size: smaller; /* Making the font size smaller */
+    height: 85px;
+    /*background-color: rgb(173, 184, 181);*/
 }
 
 @media (min-width: 1900px) {
     .sticky {
         position: relative;
-        bottom: 1vh; /* Pega el div al fondo */
+        /*bottom: 1vh;  Pega el div al fondo */
         /*background-color: rgb(136, 30, 30);*/
         font-size: smaller; /* Making the font size smaller */
       } 
@@ -19,7 +20,7 @@
   @media (min-width: 1440px) and (max-width: 1440px) {
     .sticky {
         position: relative;
-        bottom: 40px; /* Pega el div al fondo */
+        /*bottom: 40px;  Pega el div al fondo */
         /*background-color: rgb(136, 30, 30);*/
         font-size: smaller; /* Making the font size smaller */
       }
@@ -29,7 +30,7 @@
   @media (min-width: 1366px) and (max-width: 1366px) {
     .sticky {
         position: relative;
-        bottom: 5px; /* Pega el div al fondo */
+        /*bottom: 5px; /* Pega el div al fondo */
         /* background-color: rgb(136, 30, 30); */
         font-size: smaller; /* Making the font size smaller */
       }
@@ -39,7 +40,7 @@
   @media (max-width: 767px) {
     .sticky {
         position: relative;
-        bottom: 0; /* Pega el div al fondo */
+        /*bottom: 0; /* Pega el div al fondo */
         font-size: smaller; /* Making the font size smaller */
       }
 }
