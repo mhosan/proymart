@@ -27,7 +27,12 @@
                 "input": "public",
                 "output": "/assets/leaflet/"
               },
-               "src/assets"
+              "src/assets",
+              {
+                "glob": ".htaccess",
+                "input": "public",
+                "output": "."
+              }
             ],
             "styles": [
               "src/styles.css",
