@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../services/supabase.service';
@@ -13,7 +13,7 @@ import { SupabaseService } from '../../services/supabase.service';
 export class AuthComponent {
   email: string = '';
   password: string = '';
-  isLogin: boolean = true;
+  @Input() isLogin: boolean = true;
   errorMessage: string = '';
   @Output() authSuccess = new EventEmitter<void>();
 

@@ -4,12 +4,13 @@ import { environment } from '../../../../environments/environment';
 //import { ApiService } from '../../services/api-service.service'; 
 import { HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; 
+import { UserMenuComponent } from '../user-menu.component';
 
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, HttpClientModule, CommonModule], 
+  imports: [RouterLink, RouterLinkActive, HttpClientModule, CommonModule, UserMenuComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -23,8 +24,6 @@ export class HeaderComponent implements OnInit{
   ngOnInit() {
    
   }
-
- 
 
   mostrarCardOn() {
     this.mostrarCard = true;
