@@ -48,6 +48,13 @@ export class SupabaseService {
 
   async signOut() {
     const { error } = await this.supabase.auth.signOut();
+    // Borra todas las claves de sesión de Supabase en localStorage
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+        localStorage.removeItem(key);
+      }
+    });
+    this.userSubject.next(null);
     if (error) throw error;
   }
 }

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { AuthComponent } from '../auth/auth.component';
 import { CommonModule } from '@angular/common';
+import { SupabaseService } from '../../services/supabase.service';
 
 @Component({
   selector: 'app-admin',
@@ -19,10 +20,17 @@ export class AdminComponent {
   ];
   selectedUser: any = null;
 
-  constructor() {
-    // Al iniciar, revisa si el usuario ya está autenticado
-    const authFlag = localStorage.getItem('autenticado');
-    this.autenticado = authFlag === 'true';
+  constructor(private supabaseService: SupabaseService) {
+    // El estado de autenticación ahora se sincroniza con SupabaseService
+  }
+
+  ngOnInit() {
+    this.supabaseService.user$.subscribe((user: any) => {
+      this.autenticado = !!user;
+      if (!user) {
+        this.selectedUser = null;
+      }
+    });
   }
 
   fetchUsers() {
@@ -38,12 +46,13 @@ export class AdminComponent {
   }
 
   onAuthSuccess() {
-    this.autenticado = true;
-    localStorage.setItem('autenticado', 'true');
+    this.selectedUser = null;
+    // Ya no es necesario recargar ni suscribirse de nuevo, el estado se sincroniza automáticamente.
   }
 
   logout() {
-    this.autenticado = false;
-    localStorage.removeItem('autenticado');
+    // Método de logout deshabilitado: el logout ahora es centralizado desde el menú de usuario
+    // this.autenticado = false;
+    // localStorage.removeItem('autenticado');
   }
 }

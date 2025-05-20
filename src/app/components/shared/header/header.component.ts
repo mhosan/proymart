@@ -5,6 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; 
 import { UserMenuComponent } from '../user-menu.component';
+import { SupabaseService } from '../../../services/supabase.service';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class HeaderComponent implements OnInit{
   data: any;
   mostrarCard = false;
 
-  //constructor(private apiService: ApiService) {} 
+  constructor(public supabaseService: SupabaseService) {} 
 
   ngOnInit() {
    

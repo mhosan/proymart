@@ -9,6 +9,8 @@ import { TerminosComponent } from './components/legal/terminos/terminos.componen
 import { AdminComponent } from './components/admin/admin.component';
 import { MapaComponent } from './components/mapa/mapa.component';
 import { LlmComponent } from './components/llm/llm.component';
+import { AuthGuard } from './guards/auth.guard';
+import { LoginPageComponent } from './components/auth/login-page.component';
 
 export const routes: Routes = [
   { path: '', component: HeroComponent },
@@ -18,8 +20,9 @@ export const routes: Routes = [
   { path: 'contact', component: CtaComponent },
   { path: 'privacidad', component: PrivacidadComponent },
   { path: 'terminos', component: TerminosComponent},
-  { path: 'admin', component: AdminComponent},
-  { path: 'mapa', component: MapaComponent },
+  { path: 'admin', component: AdminComponent, canActivate: [AuthGuard]},
+  { path: 'mapa', component: MapaComponent},
   { path: 'llm', component: LlmComponent },
+  { path: 'login', component: LoginPageComponent },
   { path: '**', redirectTo: '' }
 ];

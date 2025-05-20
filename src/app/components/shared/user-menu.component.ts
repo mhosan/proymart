@@ -50,8 +50,9 @@ export class UserMenuComponent {
     this.isLogin = false;
     this.showAuth = true;
   }
-  onLogout() {
-    this.supabaseService.signOut();
+  async onLogout() {
+    await this.supabaseService.signOut();
+    window.location.reload(); // Fuerza recarga para limpiar cualquier estado residual
   }
   onAuthSuccess() {
     this.showAuth = false;

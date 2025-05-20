@@ -2,10 +2,9 @@
     <div class="container">
       <h2>Administración del Sitio</h2>
       <div *ngIf="!autenticado">
-        <app-auth (authSuccess)="onAuthSuccess()"></app-auth>
+        <app-auth (authSuccess)="onAuthSuccess()" [isLogin]="true"></app-auth>
       </div>
       <div *ngIf="autenticado">
-        <button class="btn btn-danger mb-3" (click)="logout()">Cerrar sesión</button>
         <h2>Panel de administración</h2>
         <ul>
           <li *ngFor="let user of users" (click)="selectUser(user)" [class.selected]="user.selected">
