@@ -10,7 +10,7 @@ import { AuthComponent } from '../auth/auth.component';
   template: `
     <div class="dropdown">
       <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-        Usuario
+        <i class="fas fa-user me-1"></i> Usuario
       </button>
       <ul class="dropdown-menu" aria-labelledby="userMenuButton">
         <li><a class="dropdown-item" href="#" (click)="onSignIn()">Sign In</a></li>
