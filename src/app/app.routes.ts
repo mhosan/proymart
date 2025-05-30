@@ -11,6 +11,7 @@ import { MapaComponent } from './components/mapa/mapa.component';
 import { LlmComponent } from './components/llm/llm.component';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginPageComponent } from './components/auth/login-page.component';
+import { IaComponent } from './components/ia/ia.component';
 
 export const routes: Routes = [
   { path: '', component: HeroComponent },
@@ -24,5 +25,6 @@ export const routes: Routes = [
   { path: 'mapa', component: MapaComponent},
   { path: 'llm', component: LlmComponent },
   { path: 'login', component: LoginPageComponent },
+  { path: 'ia', component: IaComponent },
   { path: '**', redirectTo: '' }
 ];

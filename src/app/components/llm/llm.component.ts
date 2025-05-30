@@ -15,7 +15,7 @@ export class LlmComponent {
   inputData: string = '';
   loading: boolean = false;
 
-  // Nuevos parámetros para el request
+  // parámetros por defecto para el request
   model: string = 'mistralai/mistral-7b-instruct:free';
   max_tokens: number = 10;
   role: string = 'user';

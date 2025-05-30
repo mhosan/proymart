@@ -6,12 +6,13 @@ import { HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; 
 import { UserMenuComponent } from '../user-menu.component';
 import { SupabaseService } from '../../../services/supabase.service';
+import { IaComponent } from '../../ia/ia.component';
 
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, HttpClientModule, CommonModule, UserMenuComponent],
+  imports: [RouterLink, RouterLinkActive, HttpClientModule, CommonModule, UserMenuComponent, IaComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
