@@ -8,7 +8,7 @@ import { PrivacidadComponent } from './components/legal/privacidad/privacidad.co
 import { TerminosComponent } from './components/legal/terminos/terminos.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { MapaComponent } from './components/mapa/mapa.component';
-import { LlmComponent } from './components/llm/llm.component';
+import { LlmDirectoComponent } from './components/llmDirecto/llmDirecto.component';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginPageComponent } from './components/auth/login-page.component';
 import { IaComponent } from './components/ia/ia.component';
@@ -23,7 +23,7 @@ export const routes: Routes = [
   { path: 'terminos', component: TerminosComponent},
   { path: 'admin', component: AdminComponent, canActivate: [AuthGuard]},
   { path: 'mapa', component: MapaComponent},
-  { path: 'llm', component: LlmComponent },
+  { path: 'llm', component: LlmDirectoComponent },
   { path: 'login', component: LoginPageComponent },
   { path: 'ia', component: IaComponent },
   { path: '**', redirectTo: '' }

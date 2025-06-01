@@ -1,8 +1,9 @@
 <div class="container mt-4">
-  <h2>Inteligencia Artificial</h2>
+  <h2>Pronostico del tiempo</h2>
+  <h4>Ingresar una ciudad</h4>
   <form (ngSubmit)="obtenerPronostico()" class="mb-3">
     <div class="input-group">
-      <input type="text" class="form-control" placeholder="Ingrese una ciudad" [(ngModel)]="ciudad" name="ciudad" required>
+      <input type="text" class="form-control" placeholder="Ciudad" [(ngModel)]="ciudad" name="ciudad" required>
       <button class="btn btn-primary" type="submit" [disabled]="loading">OK</button>
     </div>
   </form>

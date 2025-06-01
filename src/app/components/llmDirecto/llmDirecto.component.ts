@@ -7,10 +7,10 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-llm',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './llm.component.html',
-  styleUrl: './llm.component.css'
+  templateUrl: './llmDirecto.component.html',
+  styleUrl: './llmDirecto.component.css'
 })
-export class LlmComponent {
+export class LlmDirectoComponent {
   resultado: string = '';
   inputData: string = '';
   loading: boolean = false;
