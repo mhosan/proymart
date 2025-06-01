@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class IaOrquestadorService {
-  private apiUrl = 'https://serverminimo.onrender.com/api/ia'; // Cambia esta URL si tu endpoint es diferente
+  private apiUrl = 'https://serverminimo.onrender.com/api/weather'; 
 
   constructor(private http: HttpClient) {}
 
   obtenerResumenPronostico(ciudad: string): Observable<any> {
-    return this.http.post(this.apiUrl, { ciudad });
+    return this.http.post(this.apiUrl, { city: ciudad });
   }
 }

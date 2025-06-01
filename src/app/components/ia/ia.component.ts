@@ -25,8 +25,13 @@ export class IaComponent {
     this.resultado = '';
     this.iaOrquestadorService.obtenerResumenPronostico(this.ciudad).subscribe({
       next: (res) => {
-        // Puedes ajustar el formato según la respuesta de tu backend
-        this.resultado = typeof res === 'object' ? JSON.stringify(res, null, 2) : res;
+        // Extraer solo la propiedad "content" del resultado JSON-RPC y formatear como párrafo
+        if (res && res.result && res.result.content) {
+          // Reemplazar saltos de línea múltiples por un solo espacio
+          this.resultado = res.result.content.replace(/\s*\n+\s*/g, ' ').trim();
+        } else {
+          this.resultado = typeof res === 'object' ? JSON.stringify(res, null, 2) : res;
+        }
         this.loading = false;
       },
       error: (err) => {
