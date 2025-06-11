@@ -12,6 +12,8 @@ import { LlmDirectoComponent } from './components/llmDirecto/llmDirecto.componen
 import { AuthGuard } from './guards/auth.guard';
 import { LoginPageComponent } from './components/auth/login-page.component';
 import { IaComponent } from './components/ia/ia.component';
+import {  Llm7ChatComponent } from './components/llm7-chat/llm7-chat.component';
+
 
 export const routes: Routes = [
   { path: '', component: HeroComponent },
@@ -26,5 +28,6 @@ export const routes: Routes = [
   { path: 'llm', component: LlmDirectoComponent },
   { path: 'login', component: LoginPageComponent },
   { path: 'ia', component: IaComponent },
+  { path: 'chat', component: Llm7ChatComponent },
   { path: '**', redirectTo: '' }
 ];
