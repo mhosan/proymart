@@ -6,11 +6,10 @@ import { FormsModule } from '@angular/forms';
 import { IaOrquestadorService } from '../../services/ia-orquestador.service';
 
 @Component({
-  selector: 'app-ia',
-  standalone: true,
-  templateUrl: './ia.component.html',
-  styleUrl: './ia.component.css',
-  imports: [HttpClientModule, CommonModule, FormsModule]
+    selector: 'app-ia',
+    templateUrl: './ia.component.html',
+    styleUrl: './ia.component.css',
+    imports: [HttpClientModule, CommonModule, FormsModule]
 })
 export class IaComponent {
   ciudad: string = '';

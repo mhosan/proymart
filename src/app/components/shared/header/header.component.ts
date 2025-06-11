@@ -10,11 +10,10 @@ import { IaComponent } from '../../ia/ia.component';
 
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [RouterLink, RouterLinkActive, HttpClientModule, CommonModule, UserMenuComponent, IaComponent],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+    selector: 'app-header',
+    imports: [RouterLink, RouterLinkActive, HttpClientModule, CommonModule, UserMenuComponent, IaComponent],
+    templateUrl: './header.component.html',
+    styleUrl: './header.component.css'
 })
 export class HeaderComponent implements OnInit{
   appName = environment.appName;

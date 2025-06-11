@@ -4,11 +4,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-llm',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './llmDirecto.component.html',
-  styleUrl: './llmDirecto.component.css'
+    selector: 'app-llm',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './llmDirecto.component.html',
+    styleUrl: './llmDirecto.component.css'
 })
 export class LlmDirectoComponent {
   resultado: string = '';

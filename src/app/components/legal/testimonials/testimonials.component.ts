@@ -3,11 +3,10 @@ import { Component } from '@angular/core';
 import { environment } from '../../../../environments/environment'
 
 @Component({
-  selector: 'app-testimonials',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './testimonials.component.html',
-  styleUrl: './testimonials.component.css'
+    selector: 'app-testimonials',
+    imports: [CommonModule],
+    templateUrl: './testimonials.component.html',
+    styleUrl: './testimonials.component.css'
 })
 export class TestimonialsComponent {
   appName = environment.appName;

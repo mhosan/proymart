@@ -11,11 +11,10 @@ const leafletAssets = `${normalizedBaseHref}assets/leaflet/`;
 }); */
 
 @Component({
-  selector: 'app-mapa',
-  standalone: true,
-  imports: [],
-  templateUrl: './mapa.component.html',
-  styleUrl: './mapa.component.css'
+    selector: 'app-mapa',
+    imports: [],
+    templateUrl: './mapa.component.html',
+    styleUrl: './mapa.component.css'
 })
 export class MapaComponent implements OnInit {
     private map!: L.Map;

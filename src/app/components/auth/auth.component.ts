@@ -4,11 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../services/supabase.service';
 
 @Component({
-  selector: 'app-auth',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.css']
+    selector: 'app-auth',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './auth.component.html',
+    styleUrls: ['./auth.component.css']
 })
 export class AuthComponent {
   email: string = '';

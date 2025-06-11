@@ -5,11 +5,10 @@ import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../../services/supabase.service';
 
 @Component({
-  selector: 'app-admin',
-  standalone: true,
-  imports: [NgIf, AuthComponent, CommonModule],
-  templateUrl: './admin.component.html',
-  styleUrl: './admin.component.css'
+    selector: 'app-admin',
+    imports: [NgIf, AuthComponent, CommonModule],
+    templateUrl: './admin.component.html',
+    styleUrl: './admin.component.css'
 })
 export class AdminComponent {
   autenticado: boolean = false;

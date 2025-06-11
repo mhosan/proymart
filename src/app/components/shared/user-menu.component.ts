@@ -5,9 +5,8 @@ import { SupabaseService } from '../../services/supabase.service';
 import { AuthComponent } from '../auth/auth.component';
 
 @Component({
-  selector: 'app-user-menu',
-  standalone: true,
-  template: `
+    selector: 'app-user-menu',
+    template: `
     <div class="dropdown">
       <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="fas fa-user me-1"></i> Usuario
@@ -33,8 +32,8 @@ import { AuthComponent } from '../auth/auth.component';
       </div>
     </div>
   `,
-  styles: [``],
-  imports: [CommonModule, AuthComponent],
+    styles: [``],
+    imports: [CommonModule, AuthComponent]
 })
 export class UserMenuComponent {
   showAuth = false;
