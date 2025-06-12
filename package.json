@@ -23,6 +23,7 @@
     "@popperjs/core": "^2.11.8",
     "@supabase/supabase-js": "^2.49.4",
     "@types/leaflet": "^1.9.17",
+    "angular-in-memory-web-api": "^0.20.0",
     "bootstrap": "^5.3.3",
     "dhtmlx-gantt": "^9.0.11",
     "frappe-gantt": "^1.0.3",

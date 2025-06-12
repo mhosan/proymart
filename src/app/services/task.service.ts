@@ -1,19 +1,34 @@
 import { Injectable } from '@angular/core';
 import { Task } from '../models/task';
+import { HttpClient } from '@angular/common/http';
+import { HandleError } from '../services/service-helper.ts';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
+  private taskUrl = 'api/tasks';
+  constructor(private http: HttpClient) { }
 
-  constructor() { }
+  get(): Promise<Task[]> {
+    return firstValueFrom(this.http.get(this.taskUrl))
+      .catch(HandleError);
+  }
+
+  insert(task: Task): Promise<Task> {
+    return firstValueFrom(this.http.post(this.taskUrl, task))
+      .catch(HandleError);
+  }
+
+  update(task: Task): Promise<void> {
+    return firstValueFrom(this.http.put(`${this.taskUrl}/${task.id}`, task))
+      .catch(HandleError);
+  }
+
+  remove(id: number): Promise<void> {
+    return firstValueFrom(this.http.delete(`${this.taskUrl}/${id}`))
+      .catch(HandleError);
+  }
   
-  get(): Promise<Task[]>{
-    return Promise.resolve([
-    { id: 1, text: 'Task #1', start_date: '2023-04-15 00:00', duration: 3, progress: 0.6, parent: 0 },
-    { id: 2, text: 'Task #2', start_date: '2023-04-18 00:00', duration: 3, progress: 0.4, parent: 0 },
-    { id: 3, text: 'Task #3', start_date: '2023-04-15 00:00', duration: 3, progress: 0.7, parent: 0 },
-    { id: 4, text: 'Task #4', start_date: '2023-04-18 00:00', duration: 3, progress: 0.8, parent: 0 }
-    ]);
-    }
 }
