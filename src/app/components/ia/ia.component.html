@@ -1,6 +1,9 @@
-<div class="container mt-4">
-  <h2>Pronostico del tiempo</h2>
-  <h4>Ingresar una ciudad</h4>
+<div class="container mt-4" >
+  <h2 >Pronostico del tiempo</h2>
+  <p>Probar un MCP que provee el pronostico del tiempo, en formato JSON, luego el LLM lo formatea a lenguaje natural.</p>
+  <br>
+  <br>
+  <h5>Ingresar una ciudad</h5>
   <form (ngSubmit)="obtenerPronostico()" class="mb-3">
     <div class="input-group">
       <input type="text" class="form-control" placeholder="Ciudad" [(ngModel)]="ciudad" name="ciudad" required>
