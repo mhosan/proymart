@@ -7,3 +7,16 @@
 ```powershell
    ng generate component gantt --skip-tests
 ```
+- Crear un modelo de datos para las tareas:
+```powershell
+   ng generate class models/task --skip-tests
+```
+`Modelo de datos:
+export class Task {
+id!: number;
+start_date!: string;
+text!: string;
+progress!: number;
+duration!: number;
+parent!: number;
+}`
