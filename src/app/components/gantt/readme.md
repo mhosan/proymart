@@ -37,11 +37,11 @@
 ```
 - Crear un servicio para las tareas:
 ```powershell
-   ng generate service services/task --skip-tests
+   ng generate service services/task --flat --skip-tests
 ```
 - Crear un servicio para los links:
 ```powershell
-   ng generate service services/link --skip-tests
+   ng generate service services/link --flat --skip-tests
 ```
 - Instalar la libreria de Angular para emular un backend:
 ```powershell
