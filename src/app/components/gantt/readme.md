@@ -12,7 +12,7 @@
    ng generate class models/task --skip-tests
 ```
 **Modelo de datos:**  
-    export class Task {
+    export class Task {  
         id!: number;  
         start_date!: string;  
         text!: string;  
