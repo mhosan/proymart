@@ -22,4 +22,17 @@
         parent!: number;  
         }  
 ```
+- Crear un modelo de datos para los links:
+```powershell
+   ng generate class models/link --skip-tests
+```
+**Modelo de datos:**
+```typescript
+    export class Link {
+        id!: number;
+        source!: number;
+        target!: number;
+        type!: string;
+        } 
+```
     
