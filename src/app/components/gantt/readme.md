@@ -43,11 +43,11 @@
 ```powershell
    ng generate service services/link --flat --skip-tests
 ```
-- Instalar la libreria de Angular para emular un backend:
+- **Instalar la libreria de Angular para emular un backend:**
 ```powershell
    npm install angular-in-memory-web-api --save
 ```
-- Crear un servicio para gestionar datos en memoria:
+- **Crear un servicio para gestionar datos en memoria:**
 ```powershell
    ng generate service services/in-memory-data --flat --skip-tests
 ```
