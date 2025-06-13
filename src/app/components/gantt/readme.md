@@ -11,7 +11,7 @@
 ```powershell
    ng generate class models/task --skip-tests
 ```
-**Modelo de datos:**  
+**Modelo de datos:**
 ```typescript
     export class Task {  
         id!: number;  
