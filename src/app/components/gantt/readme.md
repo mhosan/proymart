@@ -11,12 +11,12 @@
 ```powershell
    ng generate class models/task --skip-tests
 ```
-`Modelo de datos:
-export class Task {
-id!: number;
-start_date!: string;
-text!: string;
-progress!: number;
-duration!: number;
-parent!: number;
-}`
+<u>Modelo de datos:<u>
+    export class Task {
+        id!: number;
+        start_date!: string;
+        text!: string;
+        progress!: number;
+        duration!: number;
+        parent!: number;
+    }
