@@ -35,4 +35,21 @@
         type!: string;
         } 
 ```
-    
+- Crear un servicio para las tareas:
+```powershell
+   ng generate service services/task --skip-tests
+```
+- Crear un servicio para los links:
+```powershell
+   ng generate service services/link --skip-tests
+```
+- Instalar la libreria de Angular para emular un backend:
+```powershell
+   npm install angular-in-memory-web-api --save
+```
+- Crear un servicio para gestionar datos en memoria:
+```powershell
+   ng generate service services/in-memory-data --flat --skip-tests
+```
+
+
