@@ -1,8 +1,11 @@
 export class Task {
-id!: number;
-start_date!: string;
-text!: string;
-progress!: number;
-duration!: number;
-parent!: number;
+    id!: number;
+    text!: string;
+    start_date!: string;
+    duration!: number;
+    progress!: number;
+    parent!: number;
+    priority?: number;
+    users?: number[];
+    type?: string;
 }
