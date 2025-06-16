@@ -22,9 +22,21 @@ export class GanttComponent implements OnInit {
   constructor(private taskService: TaskService, private linkService: LinkService) { }
 
   ngOnInit() {
-    gantt.config.date_format = '%Y-%m-%d %H:%i';
-    gantt.init(this.ganttContainer.nativeElement);
+    gantt['config']['date_format'] = '%Y-%m-%d %H:%i';
+    gantt['config']['scale_unit'] = 'month';
+    gantt['config']['date_scale'] = '%F %Y';
+    gantt['config']['subscales'] = [
+      { unit: 'day', step: 1, date: '%j' }
+    ];
+    gantt['config']['duration_step'] = 30;
+    // Forzar el rango visible a 30 días
+    const start = new Date(2025, 0, 15); 
+    const end = new Date(2025, 12, 15); 
+    gantt['config']['start_date'] = start;
+    gantt['config']['end_date'] = end;
+    gantt['config']['show_progress'] = true;
 
+    gantt.init(this.ganttContainer.nativeElement);
     if (!(gantt as any).$_initOnce) {
       (gantt as any).$_initOnce = true;
 

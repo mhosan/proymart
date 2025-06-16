@@ -13,6 +13,10 @@ export class TaskService {
 
   get(): Promise<Task[]> {
     return firstValueFrom(this.http.get(this.taskUrl))
+      .then(data => {
+        console.log('TaskService.get() data:', data);
+        return data;
+      })
       .catch(HandleError);
   }
 
