@@ -60,6 +60,20 @@ export class GanttComponent implements OnInit {
         if (item['priority']) {
             item['priority'] = Number(item['priority']);
         }
+        // Asegurar que 'duration' esté presente y sea un número válido
+        if (item['duration'] === undefined || item['duration'] === null || isNaN(Number(item['duration']))) {
+            // Si no está, intentar calcularlo usando start_date y end_date si existen
+            if (item['start_date'] && item['end_date']) {
+                var start = new Date(item['start_date']);
+                var end = new Date(item['end_date']);
+                var diff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+                item['duration'] = diff > 0 ? diff : 1;
+            } else {
+                item['duration'] = 1; // Valor por defecto
+            }
+        } else {
+            item['duration'] = Number(item['duration']);
+        }
         return true;
     });
 
@@ -126,26 +140,6 @@ export class GanttComponent implements OnInit {
         return true;
     });
 
-    // Configuración del procesador de datos
-    gantt.createDataProcessor({
-        task: {
-            update: (data: any) => {
-                console.log('Actualizando tarea:', data);
-                return this.taskService.update(data);
-            },
-            create: (data: any) => {
-                console.log('Creando tarea:', data);
-                return this.taskService.insert(data);
-            },
-            delete: (id: any) => this.taskService.remove(id)
-        },
-        link: {
-            update: (data: any) => this.linkService.update(data),
-            create: (data: any) => this.linkService.insert(data),
-            delete: (id: any) => this.linkService.remove(id)
-        }
-    });
-
     gantt.templates.progress_text = function (start, end, task) {
       return Math.round((task.progress ?? 0) * 100) + "%";
     };
@@ -200,7 +194,7 @@ export class GanttComponent implements OnInit {
     gantt.setSkin("material");
 
     gantt.templates.rightside_text = function (start, end, task) {
-      return "ID: #" + task.id;
+      return task.text || "";
     };
 
     gantt.templates.leftside_text = function (start, end, task) {
