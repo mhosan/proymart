@@ -36,6 +36,25 @@ export class GanttComponent implements OnInit {
     gantt['config']['end_date'] = end;
     gantt['config']['show_progress'] = true;
 
+    gantt['config']['lightbox'] = gantt['config']['lightbox'] || {};
+    gantt['config']['lightbox']['sections'] = [
+      { name: 'description', height: 38, map_to: 'text', type: 'textarea', focus: true },
+      { name: 'progress', height: 38, map_to: 'progress', type: 'select', options: [
+        { key: 0, label: '0%' },
+        { key: 0.1, label: '10%' },
+        { key: 0.2, label: '20%' },
+        { key: 0.3, label: '30%' },
+        { key: 0.4, label: '40%' },
+        { key: 0.5, label: '50%' },
+        { key: 0.6, label: '60%' },
+        { key: 0.7, label: '70%' },
+        { key: 0.8, label: '80%' },
+        { key: 0.9, label: '90%' },
+        { key: 1, label: '100%' }
+      ] },
+      { name: 'time', type: 'duration', map_to: 'auto' }
+    ];
+
     gantt.init(this.ganttContainer.nativeElement);
     if (!(gantt as any).$_initOnce) {
       (gantt as any).$_initOnce = true;
