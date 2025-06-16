@@ -55,6 +55,10 @@ export class GanttComponent implements OnInit {
       { name: 'time', type: 'duration', map_to: 'auto' }
     ];
 
+    gantt.templates.progress_text = function(start, end, task) {
+      return Math.round((task.progress ?? 0) * 100) + "%";
+    };
+
     gantt.init(this.ganttContainer.nativeElement);
     if (!(gantt as any).$_initOnce) {
       (gantt as any).$_initOnce = true;
