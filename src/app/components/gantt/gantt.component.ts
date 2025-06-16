@@ -22,7 +22,8 @@ export class GanttComponent implements OnInit {
   constructor(private taskService: TaskService, private linkService: LinkService) { }
 
   ngOnInit() {
-    gantt['config']['date_format'] = '%Y-%m-%d %H:%i';
+    //gantt['config']['date_format'] = '%Y-%m-%d %H:%i';
+    gantt.config.date_format = '%Y-%m-%d %H:%i';
     gantt['config']['scale_unit'] = 'month'; // Escala principal en meses
     gantt['config']['date_scale'] = '%F %Y';
     gantt['config']['scale_height'] = 60; // Altura total de la escala
@@ -42,43 +43,14 @@ export class GanttComponent implements OnInit {
     gantt.config.show_progress = true;
     gantt.config.drag_progress = true;
     
-    // Configuración de los campos que se deben validar antes de guardar
+    /* // Configuración de los campos que se deben validar antes de guardar
     gantt.config.buttons_left = ["dhx_save_btn", "dhx_cancel_btn"];
-    gantt.config.buttons_right = ["dhx_delete_btn"];
-    
-    // Validación personalizada antes de guardar
-    gantt.attachEvent("onLightboxSave", function(id, item) {
-        if (!item['text']) {
-            gantt.message({type: "error", text: "Ingrese una descripción para la tarea"});
-            return false;
-        }
-        // Asegurar que 'users' sea siempre un array
-        if (item['users'] && !Array.isArray(item['users'])) {
-            item['users'] = [item['users']];
-        }
-        // Asegurar que 'priority' sea un número válido
-        if (item['priority']) {
-            item['priority'] = Number(item['priority']);
-        }
-        // Asegurar que 'duration' esté presente y sea un número válido
-        if (item['duration'] === undefined || item['duration'] === null || isNaN(Number(item['duration']))) {
-            // Si no está, intentar calcularlo usando start_date y end_date si existen
-            if (item['start_date'] && item['end_date']) {
-                var start = new Date(item['start_date']);
-                var end = new Date(item['end_date']);
-                var diff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-                item['duration'] = diff > 0 ? diff : 1;
-            } else {
-                item['duration'] = 1; // Valor por defecto
-            }
-        } else {
-            item['duration'] = Number(item['duration']);
-        }
-        return true;
-    });
-
-    // Configuración del lightbox
-    gantt.config.lightbox.sections = [
+    gantt.config.buttons_right = ["dhx_delete_btn"]; */
+      
+    /**
+     * Configuración del lightbox
+     */
+    /* gantt.config.lightbox.sections = [
         { 
             name: "description",
             height: 38,
@@ -131,21 +103,27 @@ export class GanttComponent implements OnInit {
             options: getUserList()
         }
     ];
+ */
 
     // Asegurarse de que los valores por defecto estén establecidos
-    gantt.attachEvent("onLightbox", function(id) {
+    /* gantt.attachEvent("onLightbox", function(id) {
         var task = gantt.getTask(id);
         if (!task.progress) task.progress = 0;
         if (!task['priority']) task['priority'] = 2; // Normal por defecto
-        return true;
-    });
 
-    gantt.templates.progress_text = function (start, end, task) {
+        // Asegurar una fecha de inicio para tareas nuevas si no la tienen
+        //if (!task.id && !task.start_date) {
+        //    task.start_date = new Date(); // Asigna la fecha actual como inicio
+        //}
+
+        return true;
+    }); */
+    /* gantt.templates.progress_text = function (start, end, task) {
       return Math.round((task.progress ?? 0) * 100) + "%";
-    };
+    }; */
 
     // Traducción de textos de la interfaz de Gantt al castellano, extendiendo las etiquetas existentes para evitar warnings
-    gantt.locale.labels = {
+    /* gantt.locale.labels = {
       ...gantt.locale.labels,
       dhx_cal_today_button: "Hoy",
       day_tab: "Día",
@@ -166,11 +144,11 @@ export class GanttComponent implements OnInit {
       grid_start_time: "Inicio",
       grid_duration: "Duración"
     };
-
+ */
     gantt.config.columns = [
       { name: "text", label: "Tarea", tree: true, width: 200, resize: true },
       { name: "start_date", label: "Inicio", align: "center", width: 90 },
-      { name: "duration", label: "Duración", align: "center", width: 80 },
+      { name: "duration", label: "Duración", align: "center", width: 80 }, 
       /* { name: "priority", label: "Prioridad", align: "center", width: 80, template: function (item) {
           if (item['priority'] === 1) return "Alta";
           if (item['priority'] === 2) return "Normal";
@@ -204,26 +182,27 @@ export class GanttComponent implements OnInit {
     gantt.init(this.ganttContainer.nativeElement);
     if (!(gantt as any).$_initOnce) {
       (gantt as any).$_initOnce = true;
-
-      const dp = gantt.createDataProcessor({
-        task: {
-          update: (data: Task) => this.taskService.update(data),
-          create: (data: Task) => this.taskService.insert(data),
-          delete: (id: any) => this.taskService.remove(id),
-        },
-        link: {
-          update: (data: Link) => this.linkService.update(data),
-          create: (data: Link) => this.linkService.insert(data),
-          delete: (id: any) => this.linkService.remove(id),
-        },
-      });
-
-      Promise.all([this.taskService.get(), this.linkService.get()]).then(
-        ([data, links]) => {
-          gantt.parse({ data, links });
-        }
-      );
     }
+
+    const dp = gantt.createDataProcessor({
+			task: {
+				update: (data: Task) => this.taskService.update(data),
+				create: (data: Task) => this.taskService.insert(data),
+				delete: (id: any) => this.taskService.remove(id),
+			},
+			link: {
+				update: (data: Link) => this.linkService.update(data),
+				create: (data: Link) => this.linkService.insert(data),
+				delete: (id: any) => this.linkService.remove(id),
+			},
+		});
+
+    Promise.all([this.taskService.get(), this.linkService.get()]).then(
+      ([data, links]) => {
+        gantt.parse({ data, links });
+      }
+    );
+    
   }
 }
 
