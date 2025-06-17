@@ -1,38 +1,130 @@
 import { Injectable } from '@angular/core';
 import { Task } from '../models/task';
-import { HttpClient } from '@angular/common/http';
 import { HandleError } from '../services/service-helper.ts';
-import { firstValueFrom } from 'rxjs';
+import { SupabaseService } from '../services/supabase.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private taskUrl = 'api/tasks';
-  constructor(private http: HttpClient) { }
+  constructor(private supabaseService: SupabaseService) { }
 
-  get(): Promise<Task[]> {
-    return firstValueFrom(this.http.get(this.taskUrl))
-      .then(data => {
-        console.log('TaskService.get() data:', data);
-        return data;
-      })
-      .catch(HandleError);
+  // Método auxiliar para formatear fechas al formato de Gantt
+  private formatDateForGantt(dateString: string | Date): string {
+    if (!dateString) return "";
+
+    const date = (dateString instanceof Date) ? dateString : new Date(dateString);
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() es 0-indexed
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
   }
 
-  insert(task: Task): Promise<Task> {
-    return firstValueFrom(this.http.post(this.taskUrl, task))
-      .catch(HandleError);
+  async get(): Promise<Task[]> {
+    try {
+      const data = await this.supabaseService.getDataFromTable('task');
+      const transformedData: Task[] = data.map((item: any) => ({
+        id: item.id,
+        text: item.text,
+        start_date: this.formatDateForGantt(item.start_date),
+        duration: item.duration,
+        progress: item.progress || 0,
+        parent: item.parent || 0,
+        priority: item.priority,
+        users: item.users,
+        type: item.type
+      }));
+      console.log('TaskService.get() data from Supabase (transformed):', transformedData);
+      return transformedData;
+    } catch (error) {
+      console.error('Error fetching tasks from Supabase:', error);
+      HandleError(error);
+      throw error; // Re-lanza el error para que el componente Gantt lo pueda manejar
+    }
   }
 
-  update(task: Task): Promise<void> {
-    return firstValueFrom(this.http.put(`${this.taskUrl}/${task.id}`, task))
-      .catch(HandleError);
+
+  async insert(task: Task): Promise<Task> {
+    try {
+      console.log('Objeto de tarea antes de insertar:', task);
+      // Clonar el objeto tarea para no modificar el original
+      const taskToInsert: any = { ...task };
+
+      // Eliminar propiedades internas de dhtmlxGantt y 'end_date' antes de insertar
+      delete taskToInsert['!nativeeditor_status']; // Eliminar la propiedad específica
+      delete taskToInsert['!nativeeditor_id']; // Eliminar la propiedad específica (si existe)
+      delete taskToInsert['end_date']; // Eliminar la propiedad end_date
+
+     // Ensure users is an array of integers
+     if (taskToInsert.users !== null && taskToInsert.users !== undefined) {
+      if (!Array.isArray(taskToInsert.users)) {
+        // If it's not an array, wrap it in an array
+        taskToInsert.users = [taskToInsert.users];
+      }
+      // Ensure all elements in the array are integers (optional, but good practice)
+      taskToInsert.users = taskToInsert.users.map((userId: any) => parseInt(userId, 10)).filter((userId: number) => !isNaN(userId));
+    } else {
+       // If users is null or undefined, set it to an empty array
+       taskToInsert.users = [];
+    }
+
+      const insertedTask = await this.supabaseService.insertIntoTable('task', taskToInsert);
+
+      // Después de insertar, dhtmlxGantt espera el objeto retornado con el nuevo ID asignado por la BD
+      // y los IDs temporales/nativos.
+      // Nos aseguramos de que el objeto retornado incluya las propiedades nativas si la inserción fue exitosa
+      if (insertedTask) {
+         // Copiar propiedades nativas del objeto original 'task' al objeto insertado retornado
+         // Esto es crucial para que dhtmlxGantt DataProcessor pueda actualizar su estado interno
+         // con el ID real de la base de datos.
+         // Nota: Las propiedades nativas (!...) no se envían a la BD, solo se usan para sincronizar el frontend
+         // con el backend.
+         if (task.hasOwnProperty('!nativeeditor_status')) {
+             (insertedTask as any)['!nativeeditor_status'] = (task as any)['!nativeeditor_status'];
+         }
+          if (task.hasOwnProperty('!nativeeditor_id')) {
+             (insertedTask as any)['!nativeeditor_id'] = (task as any)['!nativeeditor_id'];
+         }
+
+         // Formatear la fecha si es necesario para la respuesta
+         if (insertedTask.start_date) {
+             insertedTask.start_date = this.formatDateForGantt(insertedTask.start_date);
+         }
+      }
+
+      return insertedTask as Task; // Retornar el objeto insertado (con posibles propiedades nativas reañadidas)
+
+    } catch (error) {
+      console.error('Error inserting task into Supabase:', error);
+      HandleError(error);
+      throw error;
+    }
   }
 
-  remove(id: number): Promise<void> {
-    return firstValueFrom(this.http.delete(`${this.taskUrl}/${id}`))
-      .catch(HandleError);
+  async update(task: Task): Promise<void> {
+    try {
+      const taskToSend = { ...task }; // Crea una copia para no modificar el objeto original si es necesario
+      await this.supabaseService.updateTableById('task', task.id, taskToSend);
+    } catch (error) {
+      console.error(`Error updating task with id ${task.id} in Supabase:`, error);
+      HandleError(error); 
+      throw error; // Re-lanza el error
+    }
   }
-  
+
+  async remove(id: number): Promise<void> {
+    try {
+      await this.supabaseService.deleteFromTableById('task', id);
+    } catch (error) {
+      console.error(`Error deleting task with id ${id} from Supabase:`, error);
+      HandleError(error); 
+      throw error; // Re-lanza el error
+    }
+  }
+
 }

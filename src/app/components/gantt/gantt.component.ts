@@ -23,14 +23,12 @@ export class GanttComponent implements OnInit {
 
   ngOnInit() {
     gantt['config']['date_format'] = '%Y-%m-%d %H:%i';
-    gantt['config']['scale_unit'] = 'month'; // Escala principal en meses
-    gantt['config']['date_scale'] = '%F %Y';
-    gantt['config']['scale_height'] = 60; // Altura total de la escala
-    // Subescalas: semana y día
-    gantt['config']['subscales'] = [
-      { unit: 'week', step: 1, date: 'Semana %W' },
-      { unit: 'day', step: 1, date: '%j' }
+    gantt['config']['scales'] = [
+      { unit: 'month', step: 1, format: '%F %Y' }, // Escala principal en meses
+      { unit: 'week', step: 1, format: 'Semana %W' }, // Subescala: semana
+      { unit: 'day', step: 1, format: '%j' } // Subescala: día
     ];
+    gantt['config']['scale_height'] = 60; // Altura total de la escala
     gantt['config']['duration_step'] = 1;
     const start = new Date(2025, 0, 1);
     const end = new Date(2025, 12, 15);
@@ -164,7 +162,9 @@ export class GanttComponent implements OnInit {
     };
 
     /*********************************************
+     * 
      * Inicialización del Gant
+     * 
      *********************************************/
     gantt.init(this.ganttContainer.nativeElement);
     if (!(gantt as any).$_initOnce) {
@@ -172,7 +172,9 @@ export class GanttComponent implements OnInit {
     }
    
     /*********************************************
+     * 
      * Atajar eventos del usuario
+     * 
      *********************************************/
     const dp = gantt.createDataProcessor({
 			task: {

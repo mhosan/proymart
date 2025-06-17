@@ -1,37 +1,66 @@
 import { Injectable } from '@angular/core';
 import { Link } from '../models/link';
-import { HttpClient } from '@angular/common/http';
 import { HandleError } from '../services/service-helper.ts';
-import { firstValueFrom } from 'rxjs';
+import { SupabaseService } from '../services/supabase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LinkService {
-  private linkUrl = 'api/links';
-  constructor(private http: HttpClient) { }
+  constructor(private supabaseService: SupabaseService) { }
 
-  get(): Promise<Link[]> {
-    return firstValueFrom(this.http.get(this.linkUrl))
-      .catch(HandleError);
+  async get(): Promise<Link[]> {
+    try {
+      const data = await this.supabaseService.getDataFromTable('link');
+      const transformedData: Link[] = data.map((item: any) => ({
+        id: item.id, 
+        source: item.source,
+        target: item.target,
+        type: item.type 
+      }));
+
+      console.log('LinkService.get() data from Supabase (transformed):', transformedData);
+      return transformedData;
+
+    } catch (error) {
+      console.error('Error fetching links from Supabase:', error);
+      HandleError(error);
+      throw error; // Re-lanza el error
+    }
   }
 
 
-  insert(link: Link): Promise<Link> {
-    return firstValueFrom(this.http.post(this.linkUrl, link))
-      .catch(HandleError);
+  async insert(link: Link): Promise<Link> {
+    try {
+      const insertedLink = await this.supabaseService.insertIntoTable('link', link);
+      return insertedLink as Link; 
+    } catch (error) {
+      console.error('Error inserting link into Supabase:', error);
+      HandleError(error); 
+      throw error; // Re-lanza el error
+    }
   }
 
 
-  update(link: Link): Promise<void> {
-    return firstValueFrom(this.http.put(`${this.linkUrl}/${link.id}`, link))
-      .catch(HandleError);
+  async update(link: Link): Promise<void> {
+    try {
+      await this.supabaseService.updateTableById('link', link.id, link);
+    } catch (error) {
+      console.error(`Error updating link with id ${link.id} in Supabase:`, error);
+      HandleError(error); 
+      throw error; // Re-lanza el error
+    }
   }
 
 
-  remove(id: number): Promise<void> {
-    return firstValueFrom(this.http.delete(`${this.linkUrl}/${id}`))
-      .catch(HandleError);
+  async remove(id: number): Promise<void> {
+    try {
+      await this.supabaseService.deleteFromTableById('link', id);
+    } catch (error) {
+      console.error(`Error deleting link with id ${id} from Supabase:`, error);
+      HandleError(error); 
+      throw error; // Re-lanza el error
+    }
   }
 
 }
