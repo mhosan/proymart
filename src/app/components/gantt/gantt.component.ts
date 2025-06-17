@@ -22,8 +22,7 @@ export class GanttComponent implements OnInit {
   constructor(private taskService: TaskService, private linkService: LinkService) { }
 
   ngOnInit() {
-    //gantt['config']['date_format'] = '%Y-%m-%d %H:%i';
-    gantt.config.date_format = '%Y-%m-%d %H:%i';
+    gantt['config']['date_format'] = '%Y-%m-%d %H:%i';
     gantt['config']['scale_unit'] = 'month'; // Escala principal en meses
     gantt['config']['date_scale'] = '%F %Y';
     gantt['config']['scale_height'] = 60; // Altura total de la escala
@@ -33,9 +32,8 @@ export class GanttComponent implements OnInit {
       { unit: 'day', step: 1, date: '%j' }
     ];
     gantt['config']['duration_step'] = 1;
-    gantt['config']['duration_unit'] = 'day'; // Asegura que la duración se exprese en días en el lightbox
     // Forzar el rango visible a 30 días
-    const start = new Date(2025, 0, 15);
+    const start = new Date(2024, 11, 25);
     const end = new Date(2025, 12, 15);
     // Configuraciones básicas del Gantt
     gantt.config.start_date = start;
