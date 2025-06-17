@@ -40,10 +40,6 @@ export class GanttComponent implements OnInit {
     gantt.config.show_progress = true;
     gantt.config.drag_progress = true;
     
-    /* // Configuración de los campos que se deben validar antes de guardar
-    gantt.config.buttons_left = ["dhx_save_btn", "dhx_cancel_btn"];
-    gantt.config.buttons_right = ["dhx_delete_btn"]; */
-      
     /**
      * Configuración del lightbox
      */
@@ -101,25 +97,12 @@ export class GanttComponent implements OnInit {
         }
     ];
 
-    // Asegurarse de que los valores por defecto estén establecidos
-    /* gantt.attachEvent("onLightbox", function(id) {
-        var task = gantt.getTask(id);
-        if (!task.progress) task.progress = 0;
-        if (!task['priority']) task['priority'] = 2; // Normal por defecto
-
-        // Asegurar una fecha de inicio para tareas nuevas si no la tienen
-        //if (!task.id && !task.start_date) {
-        //    task.start_date = new Date(); // Asigna la fecha actual como inicio
-        //}
-
-        return true;
-    }); */
-    /* gantt.templates.progress_text = function (start, end, task) {
+    gantt.templates.progress_text = function (start, end, task) {
       return Math.round((task.progress ?? 0) * 100) + "%";
-    }; */
+    }; 
 
-    // Traducción de textos de la interfaz de Gantt al castellano, extendiendo las etiquetas existentes para evitar warnings
-    /* gantt.locale.labels = {
+    // Traducción de textos de la interfaz
+    gantt.locale.labels = {
       ...gantt.locale.labels,
       dhx_cal_today_button: "Hoy",
       day_tab: "Día",
@@ -140,7 +123,7 @@ export class GanttComponent implements OnInit {
       grid_start_time: "Inicio",
       grid_duration: "Duración"
     };
- */
+
     gantt.config.columns = [
       { name: "text", label: "Tarea", tree: true, width: 200, resize: true },
       { name: "start_date", label: "Inicio", align: "center", width: 90 },
@@ -171,7 +154,7 @@ export class GanttComponent implements OnInit {
     //gantt.setSkin("meadow");
     //gantt.setSkin("skyblue");
     gantt.setSkin("broadway");
-    
+
     gantt.templates.rightside_text = function (start, end, task) {
       return task.text || "";
     };
