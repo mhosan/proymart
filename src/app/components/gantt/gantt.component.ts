@@ -32,8 +32,7 @@ export class GanttComponent implements OnInit {
       { unit: 'day', step: 1, date: '%j' }
     ];
     gantt['config']['duration_step'] = 1;
-    // Forzar el rango visible a 30 días
-    const start = new Date(2024, 11, 25);
+    const start = new Date(2025, 0, 1);
     const end = new Date(2025, 12, 15);
     // Configuraciones básicas del Gantt
     gantt.config.start_date = start;
@@ -48,7 +47,7 @@ export class GanttComponent implements OnInit {
     /**
      * Configuración del lightbox
      */
-    /* gantt.config.lightbox.sections = [
+    gantt.config.lightbox.sections = [
         { 
             name: "description",
             height: 38,
@@ -101,7 +100,6 @@ export class GanttComponent implements OnInit {
             options: getUserList()
         }
     ];
- */
 
     // Asegurarse de que los valores por defecto estén establecidos
     /* gantt.attachEvent("onLightbox", function(id) {
@@ -177,6 +175,9 @@ export class GanttComponent implements OnInit {
       return task.duration + " days";
     };
 
+    /*********************************************
+     * Inicialización del Gant
+     *********************************************/
     gantt.init(this.ganttContainer.nativeElement);
     if (!(gantt as any).$_initOnce) {
       (gantt as any).$_initOnce = true;
@@ -210,6 +211,9 @@ function getUserList() {
     { key: 1, label: 'Juan Pérez' },
     { key: 2, label: 'María García' },
     { key: 3, label: 'Carlos López' },
-    { key: 4, label: 'Ana Torres' }
+    { key: 4, label: 'Ana Torres' },
+    { key: 5, label: 'Pedro Ramírez' },
+    { key: 6, label: 'Laura Martínez' },
+    { key: 7, label: 'Luis Alberto Spinetta'}
   ];
 }
