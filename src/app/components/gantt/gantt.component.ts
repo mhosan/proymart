@@ -165,8 +165,13 @@ export class GanttComponent implements OnInit {
     //gantt.setSkin("meadow");
     //gantt.setSkin("terrace");
     //gantt.setSkin("dark");
-    gantt.setSkin("material");
-
+    //gantt.setSkin("material");
+    //gantt.setSkin("contrast-white");
+    //gantt.setSkin("contrast-black");
+    //gantt.setSkin("meadow");
+    //gantt.setSkin("skyblue");
+    gantt.setSkin("broadway");
+    
     gantt.templates.rightside_text = function (start, end, task) {
       return task.text || "";
     };
@@ -182,7 +187,10 @@ export class GanttComponent implements OnInit {
     if (!(gantt as any).$_initOnce) {
       (gantt as any).$_initOnce = true;
     }
-
+   
+    /*********************************************
+     * Atajar eventos del usuario
+     *********************************************/
     const dp = gantt.createDataProcessor({
 			task: {
 				update: (data: Task) => this.taskService.update(data),
