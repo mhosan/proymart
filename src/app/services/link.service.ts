@@ -15,7 +15,7 @@ export class LinkService {
       const transformedData: Link[] = data.map((item: any) => ({
         id: item.id, 
         source: item.source,
-        target: item.target,
+        target: item.target, 
         type: item.type 
       }));
 
@@ -32,11 +32,18 @@ export class LinkService {
 
   async insert(link: Link): Promise<Link> {
     try {
-      const insertedLink = await this.supabaseService.insertIntoTable('link', link);
-      return insertedLink as Link; 
+      // Filter out internal dhtmlx-gantt properties before inserting
+      const linkToInsert = {
+        id: link.id,
+        source: link.source,
+        target: link.target,
+        type: link.type,
+      };
+      const insertedLink = await this.supabaseService.insertIntoTable('link', linkToInsert);
+      return insertedLink as Link;
     } catch (error) {
       console.error('Error inserting link into Supabase:', error);
-      HandleError(error); 
+      HandleError(error);
       throw error; // Re-lanza el error
     }
   }
@@ -44,10 +51,17 @@ export class LinkService {
 
   async update(link: Link): Promise<void> {
     try {
-      await this.supabaseService.updateTableById('link', link.id, link);
+      // Filter out internal dhtmlx-gantt properties before updating
+      const linkToUpdate = {
+        id: link.id,
+        source: link.source,
+        target: link.target,
+        type: link.type,
+      };
+      await this.supabaseService.updateTableById('link', linkToUpdate.id, linkToUpdate);
     } catch (error) {
       console.error(`Error updating link with id ${link.id} in Supabase:`, error);
-      HandleError(error); 
+      HandleError(error);
       throw error; // Re-lanza el error
     }
   }

@@ -8,7 +8,7 @@ import { SupabaseService } from '../services/supabase.service';
   providedIn: 'root'
 })
 export class TaskService {
-  constructor(private supabaseService: SupabaseService) { }
+  constructor(private supabaseService: SupabaseService) { } 
 
   // Método auxiliar para formatear fechas al formato de Gantt
   private formatDateForGantt(dateString: string | Date): string {
@@ -108,11 +108,30 @@ export class TaskService {
 
   async update(task: Task): Promise<void> {
     try {
-      const taskToSend = { ...task }; // Crea una copia para no modificar el objeto original si es necesario
-      await this.supabaseService.updateTableById('task', task.id, taskToSend);
+      const taskToSend: any = { ...task }; // Crea una copia para no modificar el objeto original si es necesario
+
+      // Eliminar propiedades internas de dhtmlxGantt antes de actualizar
+      delete taskToSend['!nativeeditor_status'];
+      delete taskToSend['!nativeeditor_id']; // Eliminar la propiedad específica (si existe)
+      delete taskToSend['end_date']; // Eliminar la propiedad end_date
+
+      // Asegurarse de que 'users' sea un array si existe y no es null/undefined
+     if (taskToSend.users !== null && taskToSend.users !== undefined) {
+      if (!Array.isArray(taskToSend.users)) {
+        // Si no es un array, envolverlo en un array
+        taskToSend.users = [taskToSend.users];
+      }
+      // Asegurarse de que todos los elementos en el array sean enteros (opcional, pero buena práctica)
+      taskToSend.users = taskToSend.users.map((userId: any) => parseInt(userId, 10)).filter((userId: number) => !isNaN(userId));
+    } else {
+       // Si users es null o undefined, establecerlo a un array vacío para evitar errores en la BD
+       taskToSend.users = [];
+    }
+
+      await this.supabaseService.updateTableById('task', taskToSend.id, taskToSend);
     } catch (error) {
       console.error(`Error updating task with id ${task.id} in Supabase:`, error);
-      HandleError(error); 
+      HandleError(error);
       throw error; // Re-lanza el error
     }
   }
