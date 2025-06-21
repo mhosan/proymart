@@ -139,9 +139,7 @@ export class GanttComponent implements OnInit {
     if (window.innerWidth < 768) {
       // Configuración para dispositivos pequeños
       gantt.config.columns = [
-        { name: "text", label: "Tarea", width: 75, tree: true },
-        { name: "start_date", label: "Inicio", align: "center", width: 75 },
-        { name: "duration", label: "Dur.", align: "center", width: 25 },
+        { name: "text", label: "Tarea", width: 80, tree: true },
         { name: "add" }
       ];
       // Opcional: ajustar el ancho total de la grilla si es necesario
