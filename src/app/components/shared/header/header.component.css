@@ -9,3 +9,33 @@ header {
     padding: 0 2vw;
     box-sizing: border-box;
 }
+
+@media (max-width: 767.98px) { /* Estilos para pantallas pequeñas cuando la navbar colapsa */
+  .navbar-collapse.show {
+    /* Quitamos el fondo del contenedor principal */
+    /* background-color: rgba(255, 255, 255, 0.9); */
+    /* padding: 10px 0; */
+    margin-top: 5px; /* Espacio opcional entre el encabezado fijo y el menú desplegado */
+  }
+
+  .navbar-collapse.show .navbar-nav {
+    max-width: 95%; /* Limitar el ancho máximo de la lista de navegación */
+    margin: 0 auto; /* Centrar la lista de navegación */
+  }
+
+  .navbar-collapse.show .navbar-nav .nav-item {
+    display: block; /* Asegurar que el item se comporta como bloque */
+    margin: 0 auto 2px auto; /* Centrar horizontalmente y mantener espacio abajo */
+    min-width: 600px; 
+    float: none; /* Neutralizar flotaciones de Bootstrap */
+    clear: both; /* Limpiar flotaciones */
+  }
+
+  .navbar-collapse.show .navbar-nav .nav-item .nav-link .menu-item-bg {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semi-transparente */
+    padding: 1px 10px; /* Padding */
+    display: inline-block; /* Permitir ancho limitado y centrado */
+    min-width: 150px; /* Ajusta este porcentaje si es necesario */
+    margin: 0 auto; /* Centrar */
+  }
+}

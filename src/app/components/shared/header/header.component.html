@@ -1,4 +1,4 @@
-<header class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+<header class="navbar navbar-expand-md navbar-light bg-light fixed-top">
     <div class="container">
       <a class="navbar-brand" routerLink="/">{{appName}}</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -7,34 +7,34 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link" routerLink="/features" routerLinkActive="active">Caract.</a>
+            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#navbarNav" routerLink="/features" routerLinkActive="active"><span class="menu-item-bg">Caract.</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/testimonials" routerLinkActive="active">Testimonios</a>
+            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#navbarNav" routerLink="/testimonials" routerLinkActive="active"><span class="menu-item-bg">Testimonios</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/pricing" routerLinkActive="active">Precios</a>
+            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#navbarNav" routerLink="/pricing" routerLinkActive="active"><span class="menu-item-bg">Precios</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contacto</a>
+            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#navbarNav" routerLink="/contact" routerLinkActive="active"><span class="menu-item-bg">Contacto</span></a>
           </li>
           <li class="nav-item" *ngIf="supabaseService.user$ | async as user">
-            <a class="nav-link" routerLink="/admin" routerLinkActive="active">Admin</a>
+            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#navbarNav" routerLink="/admin" routerLinkActive="active"><span class="menu-item-bg">Admin</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/mapa" routerLinkActive="active">Mapeo</a>
+            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#navbarNav" routerLink="/mapa" routerLinkActive="active"><span class="menu-item-bg">Mapeo</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/llm" routerLinkActive="active">LLM</a>
+            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#navbarNav" routerLink="/llm" routerLinkActive="active"><span class="menu-item-bg">LLM</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/ia" routerLinkActive="active">LLM MCP</a>
+            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#navbarNav" routerLink="/ia" routerLinkActive="active"><span class="menu-item-bg">LLM MCP</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/chat" routerLinkActive="active">LLM7.io</a>
+            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#navbarNav" routerLink="/chat" routerLinkActive="active"><span class="menu-item-bg">LLM7.io</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/gantt" routerLinkActive="active">Gantt</a>
+            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#navbarNav" routerLink="/gantt" routerLinkActive="active"><span class="menu-item-bg">Gantt</span></a>
           </li>
         </ul>
         <button class="btn btn-primary btn-sm me-2" (click)="mostrarCard = true">Comenzar ahora</button>
