@@ -145,9 +145,16 @@ export class GanttComponent implements OnInit {
       gantt.config.grid_width = 300;
     } else {
       gantt.config.columns = [
-        { name: "text", label: "Tarea", tree: true, width: 200, resize: true },
-        { name: "start_date", label: "Inicio", align: "center", width: 90 },
-        { name: "duration", label: "Duración", align: "center", width: 80 },
+        { name: "text", label: "Tarea", tree: true, width: 100, resize: true },
+        { name: "start_date", label: "Inicio", align: "center", width: 70, template: function(obj) {
+          if (!obj.start_date) return '';
+          const date = new Date(obj.start_date);
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const year = String(date.getFullYear()).slice(-2);
+          return `${day}/${month}/${year}`;
+        }},
+        { name: "duration", label: "Duración", align: "center", width: 60 },
         /* { name: "priority", label: "Prioridad", align: "center", width: 80, template: function (item) {
             if (item['priority'] === 1) return "Alta";
             if (item['priority'] === 2) return "Normal";
