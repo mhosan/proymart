@@ -44,17 +44,18 @@
     margin-top: 54px;
     /* Ajusta este valor según la altura de tu menú principal */
   }
+}
 
-  .gantt-toolbar {
-    z-index: 9999 !important;
-    display: flex;
-    position: relative;
-    margin-bottom: 1rem;
-    gap: 1rem;
-    align-items: center;
-    background: #a8a7a4;
-    border: 2px solid #201402;
-    padding: 0.75rem 1.5rem;
-    box-sizing: border-box;
-    border-radius: 6px;
-  }
+.gantt-toolbar {
+  z-index: 9999 !important;
+  display: flex;
+  position: relative;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  align-items: center;
+  background: #a8a7a4;
+  border: 2px solid #201402;
+  padding: 0.75rem 1.5rem;
+  box-sizing: border-box;
+  border-radius: 6px;
+}
