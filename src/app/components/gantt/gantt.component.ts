@@ -216,7 +216,15 @@ export class GanttComponent implements OnInit {
      *********************************************/
     const dp = gantt.createDataProcessor({
       task: {
-        update: (data: Task) => this.taskService.update(data),
+        update: (data: Task) => {
+          const sanitizedTask: Task = {
+            ...data,
+            duration: Number(data.duration) || 0,
+            progress: Number(data.progress) || 0,
+            parent: Number(data.parent) || 0,
+          };
+          return this.taskService.update(sanitizedTask);
+        },
         create: (data: Task) => this.taskService.insert(data),
         delete: (id: any) => this.taskService.remove(id),
       },
