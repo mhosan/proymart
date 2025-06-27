@@ -3,22 +3,20 @@
 Este proyecto fué generado con Angular CLI versión 20
 
 ## Supabase desde el frontend
-Instalación de la biblioteca supabase-js:
+- Instalación de la biblioteca supabase-js:
 ```bash
   npm install @supabase/supabase-js
 ```
-
-Inicialización del cliente:
+- Inicialización del cliente:
 Configura el cliente de Supabase con la URL de tu proyecto y la clave pública (anon key), que puedes obtener desde el panel de control de Supabase:
-javascript
+```typescript 
+    import { createClient } from '@supabase/supabase-js';
 
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = 'https://tu-proyecto.supabase.co';
-const supabaseKey = 'tu-clave-pública';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-Interacciones con la API:
+    const supabaseUrl = 'https://tu-proyecto.supabase.co';
+    const supabaseKey = 'tu-clave-pública';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+```
+- Interacciones con la API:
 Base de datos: Puedes realizar consultas RESTful para leer, insertar, actualizar o eliminar datos directamente desde el frontend. Por ejemplo:
 javascript
 
