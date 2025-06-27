@@ -31,7 +31,7 @@ export class GanttComponent implements OnInit {
       { unit: 'week', step: 1, format: 'Semana %W' }, // Subescala: semana
       { unit: 'day', step: 1, format: '%j' } // Subescala: día
     ];
-    gantt['config']['scale_height'] = 60; // Altura total de la escala
+        gantt['config']['scale_height'] = 60; // Altura total de la escala
     gantt['config']['duration_step'] = 1;
     const start = new Date(2025, 0, 1);
     const end = new Date(2025, 12, 15);
@@ -216,7 +216,15 @@ export class GanttComponent implements OnInit {
      *********************************************/
     const dp = gantt.createDataProcessor({
       task: {
-        update: (data: Task) => this.taskService.update(data),
+        update: (data: Task) => {
+          const sanitizedTask: Task = {
+            ...data,
+            duration: Number(data.duration) || 0,
+            progress: Number(data.progress) || 0,
+            parent: Number(data.parent) || 0,
+          };
+          return this.taskService.update(sanitizedTask);
+        },
         create: (data: Task) => this.taskService.insert(data),
         delete: (id: any) => this.taskService.remove(id),
       },

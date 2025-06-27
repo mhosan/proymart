@@ -1,21 +1,86 @@
 @import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
 
-.gantt-wrapper {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  margin-top: 74px; /* Ajusta este valor según la altura de tu menú principal */
-}
-
-.gantt-toolbar {
-  z-index: 9999 !important;
-  position: relative;
-}
 
 .gantt-chart {
-	position: relative;
-	width: 100%;
-	overflow: hidden;
-	height: 100%;
+  flex: 1 1 0;
+  position: relative;
+  height: auto;
+  width: 98%;
+  overflow: hidden;
+  margin-left: 1%;
 }
- 
+
+/* Monitor grande 1920 x 1080 */
+@media (min-width: 1900px) {
+  .gantt-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 82vh;
+    margin-top: 54px;
+    /* Ajusta este valor según la altura de tu menú principal */
+  }
+  .gantt-toolbar {
+    z-index: 9999 !important;
+    display: flex;
+    position: relative;
+    margin-bottom: 1rem;
+    gap: 1rem;
+    align-items: center;
+    background: #a8a7a4;
+    border: 2px solid #201402;
+    padding: 0.75rem 1.5rem;
+    box-sizing: border-box;
+    border-radius: 6px;
+  }
+}
+
+/* Monitor mediano 1440 x 900 */
+@media (min-width: 1400px) {
+  .gantt-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 78vh;
+    margin-top: 54px;
+    /* Ajusta este valor según la altura de tu menú principal */
+  }
+  .gantt-toolbar {
+    z-index: 9999 !important;
+    display: flex;
+    position: relative;
+    margin-bottom: 1rem;
+    gap: 1rem;
+    align-items: center;
+    background: #a8a7a4;
+    border: 2px solid #201402;
+    padding: 0.75rem 1.5rem;
+    box-sizing: border-box;
+    border-radius: 6px;
+  }
+}
+
+/* Monitor laptop 1360 x 768 */
+@media (min-width: 1300px) {
+  .gantt-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 75vh;
+    margin-top: 54px;
+    /* Ajusta este valor según la altura de tu menú principal */
+  }
+  .gantt-toolbar {
+    z-index: 9999 !important;
+    display: flex;
+    position: relative;
+    margin-bottom: 0.5rem;
+    gap: 1rem;
+    align-items: center;
+    background: #a8a7a4;
+    border: 2px solid #201402;
+    padding: 0.75rem 1.5rem;
+    box-sizing: border-box;
+    border-radius: 2px;
+    margin-left: 15px;
+    margin-right: 15px;
+
+  }
+}
