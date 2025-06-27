@@ -14,7 +14,7 @@ import { LoginPageComponent } from './components/auth/login-page.component';
 import { IaComponent } from './components/ia/ia.component';
 import { Llm7ChatComponent } from './components/llm7-chat/llm7-chat.component';
 import { GanttComponent } from './components/gantt/gantt.component';
-
+import { FrappeganttComponent} from './components/frappegantt/frappegantt.component';
 
 
 export const routes: Routes = [
@@ -32,5 +32,6 @@ export const routes: Routes = [
   { path: 'ia', component: IaComponent },
   { path: 'chat', component: Llm7ChatComponent },
   { path: 'gantt', component: GanttComponent },
+  { path: 'frappe', component: FrappeganttComponent },
   { path: '**', redirectTo: '' }
 ];

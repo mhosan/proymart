@@ -1,4 +1,5 @@
 @import "../node_modules/leaflet/dist/leaflet.css";
+@import "../node_modules/frappe-gantt/dist/frappe-gantt.css";
 
 /* You can add global styles to this file, and also import other style files */
 section {

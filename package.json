@@ -22,6 +22,7 @@
     "@langchain/core": "^0.3.58",
     "@popperjs/core": "^2.11.8",
     "@supabase/supabase-js": "^2.49.4",
+    "@types/frappe-gantt": "^0.9.0",
     "@types/leaflet": "^1.9.17",
     "angular-in-memory-web-api": "^0.20.0",
     "bootstrap": "^5.3.3",

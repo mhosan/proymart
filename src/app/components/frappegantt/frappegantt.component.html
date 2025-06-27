@@ -1,0 +1,15 @@
+<div class="gantt-wrapper">
+
+  <div class="gantt-toolbar">
+    <label for="projectSelect">Proyecto:</label>
+    <select id="projectSelect">
+      <option value="1">Proyecto 1</option>
+      <option value="2">Proyecto 2</option>
+    </select>
+    <button type="button">Nuevo Proyecto</button>
+    <button type="button" (click)="addTask()">Agregar tarea</button>
+  </div>
+
+  <div #frappe_gantt_here class="gantt-chart"></div>
+  
+</div>
