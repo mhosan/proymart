@@ -31,9 +31,8 @@ const { data, error } = await supabase
   .insert([{ nombre: 'Juan', email: 'juan@example.com' }]);
 ```
 
-Autenticación: Supabase ofrece funciones para registro, inicio de sesión y gestión de usuarios:
-javascript
-
+- Autenticación: Supabase ofrece funciones para registro, inicio de sesión y gestión de usuarios:
+```javascript
 // Registro
 const { user, error } = await supabase.auth.signUp({
   email: 'usuario@example.com',
@@ -45,17 +44,19 @@ const { user, error } = await supabase.auth.signInWithPassword({
   email: 'usuario@example.com',
   password: 'contraseña'
 });
+```
 
-Almacenamiento: Puedes subir y descargar archivos:
-javascript
+- Almacenamiento: Se puede subir y descargar archivos:
+```javascript
 
 // Subir un archivo
 const { data, error } = await supabase.storage
   .from('avatares')
   .upload('avatar.png', archivo);
+```
 
-Realtime: Puedes suscribirte a cambios en la base de datos en tiempo real:
-javascript
+- Realtime: Es posible suscribirte a cambios en la base de datos en tiempo real:
+```javascript
 
 supabase
   .from('usuarios')
@@ -63,10 +64,7 @@ supabase
     console.log('Nuevo usuario:', payload.new);
   })
   .subscribe();
+```
 
-Integraciones específicas:
-Supabase proporciona integraciones optimizadas para frameworks como React, Next.js, Vue y otros. Por ejemplo, con React, puedes usar el widget Supabase Auth UI para implementar autenticación rápidamente.
-
-También hay tutoriales y plantillas para conectar Supabase con frontend frameworks.
 
 
