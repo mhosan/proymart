@@ -8,7 +8,7 @@ Este proyecto fué generado con Angular CLI versión 20
   npm install @supabase/supabase-js
 ```
 - Inicialización del cliente:
-Configura el cliente de Supabase con la URL de tu proyecto y la clave pública (anon key), que puedes obtener desde el panel de control de Supabase:
+Configurar el cliente de Supabase con la URL del proyecto en Supabase y la clave pública (anon key) que puedes obtener desde el panel de control de Supabase:
 ```typescript 
     import { createClient } from '@supabase/supabase-js';
 
@@ -17,8 +17,8 @@ Configura el cliente de Supabase con la URL de tu proyecto y la clave pública (
     const supabase = createClient(supabaseUrl, supabaseKey);
 ```
 - Interacciones con la API:
-Base de datos: Puedes realizar consultas RESTful para leer, insertar, actualizar o eliminar datos directamente desde el frontend. Por ejemplo:
-javascript
+Base de datos: Se puede realizar consultas RESTful para leer, insertar, actualizar o eliminar datos directamente desde el frontend. Por ejemplo:
+```javascript
 
 // Obtener datos
 const { data, error } = await supabase
@@ -29,6 +29,7 @@ const { data, error } = await supabase
 const { data, error } = await supabase
   .from('usuarios')
   .insert([{ nombre: 'Juan', email: 'juan@example.com' }]);
+```
 
 Autenticación: Supabase ofrece funciones para registro, inicio de sesión y gestión de usuarios:
 javascript
