@@ -3,12 +3,10 @@
 Este proyecto fué generado con Angular CLI versión 20
 
 ## Supabase desde el frontend
-Cómo usar Supabase desde el frontend
-Instalación de la biblioteca:
-Instalar supabase-js:
-bash
-
-npm install @supabase/supabase-js
+Instalación de la biblioteca supabase-js:
+```bash
+  npm install @supabase/supabase-js
+```
 
 Inicialización del cliente:
 Configura el cliente de Supabase con la URL de tu proyecto y la clave pública (anon key), que puedes obtener desde el panel de control de Supabase:
