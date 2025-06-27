@@ -1,6 +1,8 @@
 # Dato urbano:
 
-Este proyecto fué generado con Angular CLI versión 20
+Este proyecto fué generado con Angular CLI versión 20.
+
+---
 
 ## Supabase desde el frontend
 - Instalación de la biblioteca supabase-js:
