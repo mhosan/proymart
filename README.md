@@ -3,7 +3,37 @@
 Este proyecto fué generado con Angular CLI versión 20.
 
 ---
+## Frappe Gantt
+- Instalación  
+```bash
+npm install frappe-gantt
+```
+- Incluir en HTML:
+```html
+  <script src="frappe-gantt.umd.js"></script>
+  <link rel="stylesheet" href="frappe-gantt.css">
+```
+- Usar vía CDN:
+```typescript
+  <script src="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css">
+```
+- Ejemplo de uso:
+```typescript
+let tasks = [
+  {
+    id: '1',
+    name: 'Redesign website',
+    start: '2016-12-28',
+    end: '2016-12-31',
+    progress: 20
+  },
+  ...
+]
+let gantt = new Gantt("#gantt", tasks);
+```
 
+---
 ## Supabase desde el frontend
 - Instalación de la biblioteca supabase-js:
 ```bash
