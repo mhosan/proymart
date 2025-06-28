@@ -1,22 +1,21 @@
 <div class="gantt-container">
-
-  <div class="row">
-    <h4>Proyectos y tareas</h4>
-    <div class="col">
-      <label for="proyectName" class="form-label">Nombre del proyecto</label>
-      <input id="proyectName" type="text" class="form-control" placeholder="Buscar proyecto..."/>
+<h4>Proyectos y tareas</h4>
+  <div class="row row-cols-4" style="margin-top: 30px;
+    max-width: 98%; margin-left: auto; margin-right: auto;">
+    <div class="col d-flex flex-column">
+      <label for="proyectName" class="form-label mb-1">Nombre del proyecto</label>
+      <input id="proyectName" type="text" class="form-control-sm" placeholder="Buscar proyecto..."/>
     </div>
-    <div class="col">
-      <label for="startingDate" class="form-label">Fecha de inicio</label>
-      <input id="startingDate" type="date" class="form-control" placeholder="Fecha de inicio..."/>
+    <div class="col d-flex flex-column">
+      <label for="startingDate" class="form-label mb-1">Fecha de inicio</label>
+      <input id="startingDate" type="date" class="form-control-sm" placeholder="Fecha de inicio..."/>
     </div>
-    <div class="col">
-      <label for="endingDate" class="form-label">Fecha de fin</label>
-      <input id="endingDate" type="date" class="form-control" placeholder="Fecha de fin..."/>
+    <div class="col d-flex flex-column">
+      <label for="endingDate" class="form-label mb-1">Fecha de fin</label>
+      <input id="endingDate" type="date" class="form-control-sm" placeholder="Fecha de fin..."/>
     </div>
-    <div class="col">
-      <label for="endingDate" class="form-label">Fecha de fin</label>
-      <button type="button" class="btn btn-primary" (click)="showModal = false">Crear proyecto</button>
+    <div class="col d-flex justify-content-center align-items-end">
+      <button type="button" class="btn btn-primary btn-sm" (click)="showModal = false">Crear proyecto</button>
     </div>
   </div>
   
