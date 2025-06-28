@@ -16,6 +16,41 @@ import { NgIf, NgStyle, NgFor } from '@angular/common';
   providers: [TaskService, LinkService]
 })
 export class FrappeganttComponent implements OnInit {
+  editTask = { id: '', name: '', start: '', duration: 1 };
+
+  onSelectEditTask() {
+    // Busca la tarea seleccionada y carga sus datos en el formulario
+    const t = this.frappeTasks.find(task => String(task.id) === String(this.editTask.id));
+    if (t) {
+      this.editTask.name = t.name;
+      this.editTask.start = t.start;
+      // Calcula duración a partir de start y end si existe
+      if (t.start && t.end) {
+        const startDate = new Date(t.start);
+        const endDate = new Date(t.end);
+        const diff = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000*60*60*24)));
+        this.editTask.duration = diff;
+      } else {
+        this.editTask.duration = 1;
+      }
+    } else {
+      this.editTask.name = '';
+      this.editTask.start = '';
+      this.editTask.duration = 1;
+    }
+  }
+
+  onEditTask() {
+    // Aquí deberías agregar la lógica para editar la tarea seleccionada
+    // Por ejemplo, buscar la tarea por id y actualizar sus datos
+    // const idx = this.frappeTasks.findIndex(t => t.id === this.editTask.id);
+    // if (idx !== -1) {
+    //   this.frappeTasks[idx] = { ...this.frappeTasks[idx], ...this.editTask };
+    // }
+    // Limpia el formulario
+    this.editTask = { id: '', name: '', start: '', duration: 1 };
+  }
+  showEditTaskModal = false;
   showEditProjectModal = false;
   showSelectProjectModal = false;
   editProject = { id: '', start: '', end: '' };
@@ -108,6 +143,12 @@ export class FrappeganttComponent implements OnInit {
     this.gantt = new Gantt(this.ganttContainer.nativeElement, this.frappeTasks, {
       view_mode: 'Day',
       language: 'es',
+      on_click: (task: any) => {
+        // No hacer nada en click simple
+      },
+      on_date_change: () => {},
+      on_progress_change: () => {},
+      on_view_change: () => {}
     });
   }
 
