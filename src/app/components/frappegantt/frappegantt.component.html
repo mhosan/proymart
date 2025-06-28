@@ -1,9 +1,135 @@
+<!-- Modal para alta de nuevo proyecto -->
+<div class="modal fade show" tabindex="-1"
+  [ngStyle]="{display: showNewProjectModal ? 'block' : 'none', background: showNewProjectModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
+  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1060;" *ngIf="showNewProjectModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nuevo proyecto</h5>
+        <button type="button" class="btn-close" (click)="showNewProjectModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onCreateProject(); showNewProjectModal = false;" #newProjectForm="ngForm">
+          <div class="mb-3">
+            <label for="proyectName" class="form-label">Nombre del proyecto</label>
+            <input id="proyectName" type="text" class="form-control form-control-sm" [(ngModel)]="newProject.name"
+              name="name" required placeholder="Nuevo proyecto..." />
+          </div>
+          <div class="mb-3">
+            <label for="startingDate" class="form-label">Fecha de inicio</label>
+            <input id="startingDate" type="date" class="form-control form-control-sm" [(ngModel)]="newProject.start"
+              name="start" required placeholder="Fecha de inicio..." />
+          </div>
+          <div class="mb-3">
+            <label for="endingDate" class="form-label">Fecha de fin</label>
+            <input id="endingDate" type="date" class="form-control form-control-sm" [(ngModel)]="newProject.end"
+              name="end" required placeholder="Fecha de fin..." />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm"
+              (click)="showNewProjectModal = false">Cancelar</button>
+            <button type="submit" class="btn btn-primary btn-sm" [disabled]="!newProjectForm.form.valid">Crear
+              proyecto</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- Modal para edición de proyecto -->
+<div class="modal fade show" tabindex="-1"
+  [ngStyle]="{display: showEditProjectModal ? 'block' : 'none', background: showEditProjectModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
+  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1060;" *ngIf="showEditProjectModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar proyecto</h5>
+        <button type="button" class="btn-close" (click)="showEditProjectModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onEditProject(); showEditProjectModal = false;" #editProjectForm="ngForm">
+          <div class="mb-3">
+            <label for="editProyectName" class="form-label">Seleccionar proyecto</label>
+            <select id="editProyectName" class="form-select form-select-sm" [(ngModel)]="editProject.id" name="id"
+              required>
+              <option value="" selected>Seleccionar proyecto...</option>
+              <option *ngFor="let proyecto of proyectos" [value]="proyecto.id">{{ proyecto.nombre }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="editNewStartingDate" class="form-label">Nueva fecha de inicio</label>
+            <input id="editNewStartingDate" type="date" class="form-control form-control-sm"
+              [(ngModel)]="editProject.start" name="start" required placeholder="Nueva fecha de inicio..." />
+          </div>
+          <div class="mb-3">
+            <label for="editEndingDate" class="form-label">Nueva fecha de fin</label>
+            <input id="editEndingDate" type="date" class="form-control form-control-sm" [(ngModel)]="editProject.end"
+              name="end" required placeholder="Nueva fecha de fin..." />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm"
+              (click)="showEditProjectModal = false">Cancelar</button>
+            <button type="submit" class="btn btn-primary btn-sm" [disabled]="!editProjectForm.form.valid">Modificar
+              proyecto</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--   <div class="gantt-toolbar">
+    <label for="projectSelect">Proyecto:</label>
+    <select id="projectSelect">
+      <option value="1">Proyecto 1</option>
+      <option value="2">Proyecto 2</option>
+    </select>
+    <button type="button">Nuevo Proyecto</button>
+    <button type="button" class="btn btn-success" (click)="showModal = true">Nueva tarea</button>
+  </div>
+ -->
+<!-- Modal para agregar tarea -->
+<div class="modal fade show" tabindex="-1" [ngStyle]="{display: showModal ? 'block' : 'none', 
+    background: showModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
+  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1050;" *ngIf="showModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Agregar nueva tarea</h5>
+        <button type="button" class="btn-close" (click)="showModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <form class="gantt-form" (ngSubmit)="onSubmit(); showModal = false;" #taskForm="ngForm">
+          <div class="mb-3">
+            <label for="taskName" class="form-label">Nombre de la tarea</label>
+            <input id="taskName" type="text" name="name" [(ngModel)]="newTask.name" class="form-control"
+              placeholder="Nombre de la tarea" required />
+          </div>
+          <div class="mb-3">
+            <label for="taskStart" class="form-label">Fecha de inicio</label>
+            <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="taskDuration" class="form-label">Duración (días)</label>
+            <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control"
+              min="1" required />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="showModal = false">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="!taskForm.form.valid">Agregar tarea</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Row con los tres botones: seleccionar, alta y edición de proyecto -->
 <div class="row my-5" style="max-width: 100vw; margin-left: auto; margin-right: auto;">
   <h4>Proyectos y tareas</h4>
   <div class="col-auto">
-    <button type="button" class="btn btn-primary btn-sm" (click)="showSelectProjectModal = true">Seleccionar proyecto</button>
+    <button type="button" class="btn btn-primary btn-sm" (click)="showSelectProjectModal = true">Seleccionar
+      proyecto</button>
   </div>
   <div class="col-auto">
     <button type="button" class="btn btn-primary btn-sm" (click)="showNewProjectModal = true">Nuevo proyecto</button>
@@ -27,149 +153,24 @@
         <form (ngSubmit)="onSelectProject(); showSelectProjectModal = false;" #selectProjectForm="ngForm">
           <div class="mb-3">
             <label for="selectActiveProject" class="form-label">Proyecto</label>
-            <select id="selectActiveProject" class="form-select form-select-sm" [(ngModel)]="selectedProjectId" name="selectedProjectId" required>
+            <select id="selectActiveProject" class="form-select form-select-sm" [(ngModel)]="selectedProjectId"
+              name="selectedProjectId" required>
               <option value="" selected>Seleccionar proyecto...</option>
               <option *ngFor="let proyecto of proyectos" [value]="proyecto.id">{{ proyecto.nombre }}</option>
             </select>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary btn-sm" (click)="showSelectProjectModal = false">Cancelar</button>
-            <button type="submit" class="btn btn-primary btn-sm" [disabled]="!selectProjectForm.form.valid">Seleccionar</button>
+            <button type="button" class="btn btn-secondary btn-sm"
+              (click)="showSelectProjectModal = false">Cancelar</button>
+            <button type="submit" class="btn btn-primary btn-sm"
+              [disabled]="!selectProjectForm.form.valid">Seleccionar</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 </div>
+
 <div class="gantt-container">
-  <!-- Modal para alta de nuevo proyecto -->
-  <div class="modal fade show" tabindex="-1"
-    [ngStyle]="{display: showNewProjectModal ? 'block' : 'none', background: showNewProjectModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
-    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1060;" *ngIf="showNewProjectModal">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Nuevo proyecto</h5>
-          <button type="button" class="btn-close" (click)="showNewProjectModal = false"></button>
-        </div>
-        <div class="modal-body">
-          <form (ngSubmit)="onCreateProject(); showNewProjectModal = false;" #newProjectForm="ngForm">
-            <div class="mb-3">
-              <label for="proyectName" class="form-label">Nombre del proyecto</label>
-              <input id="proyectName" type="text" class="form-control form-control-sm" [(ngModel)]="newProject.name"
-                name="name" required placeholder="Nuevo proyecto..." />
-            </div>
-            <div class="mb-3">
-              <label for="startingDate" class="form-label">Fecha de inicio</label>
-              <input id="startingDate" type="date" class="form-control form-control-sm" [(ngModel)]="newProject.start"
-                name="start" required placeholder="Fecha de inicio..." />
-            </div>
-            <div class="mb-3">
-              <label for="endingDate" class="form-label">Fecha de fin</label>
-              <input id="endingDate" type="date" class="form-control form-control-sm" [(ngModel)]="newProject.end"
-                name="end" required placeholder="Fecha de fin..." />
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary btn-sm"
-                (click)="showNewProjectModal = false">Cancelar</button>
-              <button type="submit" class="btn btn-primary btn-sm" [disabled]="!newProjectForm.form.valid">Crear
-                proyecto</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para edición de proyecto -->
-  <div class="modal fade show" tabindex="-1"
-    [ngStyle]="{display: showEditProjectModal ? 'block' : 'none', background: showEditProjectModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
-    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1060;" *ngIf="showEditProjectModal">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Editar proyecto</h5>
-          <button type="button" class="btn-close" (click)="showEditProjectModal = false"></button>
-        </div>
-        <div class="modal-body">
-          <form (ngSubmit)="onEditProject(); showEditProjectModal = false;" #editProjectForm="ngForm">
-            <div class="mb-3">
-              <label for="editProyectName" class="form-label">Seleccionar proyecto</label>
-              <select id="editProyectName" class="form-select form-select-sm" [(ngModel)]="editProject.id" name="id"
-                required>
-                <option value="" selected>Seleccionar proyecto...</option>
-                <option *ngFor="let proyecto of proyectos" [value]="proyecto.id">{{ proyecto.nombre }}</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="editNewStartingDate" class="form-label">Nueva fecha de inicio</label>
-              <input id="editNewStartingDate" type="date" class="form-control form-control-sm"
-                [(ngModel)]="editProject.start" name="start" required placeholder="Nueva fecha de inicio..." />
-            </div>
-            <div class="mb-3">
-              <label for="editEndingDate" class="form-label">Nueva fecha de fin</label>
-              <input id="editEndingDate" type="date" class="form-control form-control-sm" [(ngModel)]="editProject.end"
-                name="end" required placeholder="Nueva fecha de fin..." />
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary btn-sm"
-                (click)="showEditProjectModal = false">Cancelar</button>
-              <button type="submit" class="btn btn-primary btn-sm" [disabled]="!editProjectForm.form.valid">Modificar
-                proyecto</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!--   <div class="gantt-toolbar">
-    <label for="projectSelect">Proyecto:</label>
-    <select id="projectSelect">
-      <option value="1">Proyecto 1</option>
-      <option value="2">Proyecto 2</option>
-    </select>
-    <button type="button">Nuevo Proyecto</button>
-    <button type="button" class="btn btn-success" (click)="showModal = true">Nueva tarea</button>
-  </div>
- -->
-  <!-- Modal para agregar tarea -->
-  <div class="modal fade show" tabindex="-1" [ngStyle]="{display: showModal ? 'block' : 'none', 
-    background: showModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
-    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1050;" *ngIf="showModal">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Agregar nueva tarea</h5>
-          <button type="button" class="btn-close" (click)="showModal = false"></button>
-        </div>
-        <div class="modal-body">
-          <form class="gantt-form" (ngSubmit)="onSubmit(); showModal = false;" #taskForm="ngForm">
-            <div class="mb-3">
-              <label for="taskName" class="form-label">Nombre de la tarea</label>
-              <input id="taskName" type="text" name="name" [(ngModel)]="newTask.name" class="form-control"
-                placeholder="Nombre de la tarea" required />
-            </div>
-            <div class="mb-3">
-              <label for="taskStart" class="form-label">Fecha de inicio</label>
-              <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start" class="form-control"
-                required />
-            </div>
-            <div class="mb-3">
-              <label for="taskDuration" class="form-label">Duración (días)</label>
-              <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control"
-                min="1" required />
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" (click)="showModal = false">Cancelar</button>
-              <button type="submit" class="btn btn-primary" [disabled]="!taskForm.form.valid">Agregar tarea</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div #frappe_gantt_here class="gantt-chart"></div>
-
 </div>
