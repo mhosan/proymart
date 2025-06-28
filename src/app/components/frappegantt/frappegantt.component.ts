@@ -16,6 +16,16 @@ import { NgIf, NgStyle, NgFor } from '@angular/common';
   providers: [TaskService, LinkService]
 })
 export class FrappeganttComponent implements OnInit {
+  onDeleteTask() {
+    if (!this.editTask.id) return;
+    const idx = this.frappeTasks.findIndex(t => String(t.id) === String(this.editTask.id));
+    if (idx !== -1) {
+      this.frappeTasks.splice(idx, 1);
+      this.renderGantt();
+    }
+    this.editTask = { id: '', name: '', start: '', duration: 1 };
+    this.showEditTaskModal = false;
+  }
   editTask = { id: '', name: '', start: '', duration: 1 };
 
   onSelectEditTask() {

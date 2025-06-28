@@ -205,6 +205,7 @@
             <input id="editTaskDuration" type="number" name="duration" [(ngModel)]="editTask.duration" class="form-control" min="1" required />
           </div>
           <div class="modal-footer">
+            <button type="button" class="btn btn-danger me-auto" (click)="onDeleteTask()" [disabled]="!editTask.id">Eliminar tarea</button>
             <button type="button" class="btn btn-secondary" (click)="showEditTaskModal = false">Cancelar</button>
             <button type="submit" class="btn btn-primary" [disabled]="!editTaskForm.form.valid">Guardar cambios</button>
           </div>
