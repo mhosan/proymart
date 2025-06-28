@@ -32,14 +32,15 @@
  */
  /*@import './light.css';*/
 
-.gantt-container {
+ .gantt-container {
     line-height: 14.5px;
     position: relative;
     overflow: auto;
     font-size: 12px;
-    height: var(--gv-grid-height);
+    height: 120vh;
     width: 100%;
     border-radius: 8px;
+    margin-top: 2vh;
 
     & .popup-wrapper {
         position: absolute;

@@ -1,49 +1,129 @@
+
+<!-- Row con los tres botones: seleccionar, alta y edición de proyecto -->
+<div class="row my-5" style="max-width: 100vw; margin-left: auto; margin-right: auto;">
+  <h4>Proyectos y tareas</h4>
+  <div class="col-auto">
+    <button type="button" class="btn btn-primary btn-sm" (click)="showSelectProjectModal = true">Seleccionar proyecto</button>
+  </div>
+  <div class="col-auto">
+    <button type="button" class="btn btn-primary btn-sm" (click)="showNewProjectModal = true">Nuevo proyecto</button>
+  </div>
+  <div class="col-auto">
+    <button type="button" class="btn btn-primary btn-sm" (click)="showEditProjectModal = true">Editar proyecto</button>
+  </div>
+</div>
+
+<!-- Modal para seleccionar proyecto activo -->
+<div class="modal fade show" tabindex="-1"
+  [ngStyle]="{display: showSelectProjectModal ? 'block' : 'none', background: showSelectProjectModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
+  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1060;" *ngIf="showSelectProjectModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Seleccionar proyecto activo</h5>
+        <button type="button" class="btn-close" (click)="showSelectProjectModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onSelectProject(); showSelectProjectModal = false;" #selectProjectForm="ngForm">
+          <div class="mb-3">
+            <label for="selectActiveProject" class="form-label">Proyecto</label>
+            <select id="selectActiveProject" class="form-select form-select-sm" [(ngModel)]="selectedProjectId" name="selectedProjectId" required>
+              <option value="" selected>Seleccionar proyecto...</option>
+              <option *ngFor="let proyecto of proyectos" [value]="proyecto.id">{{ proyecto.nombre }}</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" (click)="showSelectProjectModal = false">Cancelar</button>
+            <button type="submit" class="btn btn-primary btn-sm" [disabled]="!selectProjectForm.form.valid">Seleccionar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="gantt-container">
-<h4>Proyectos y tareas</h4>
-  <!-- Alta de nuevo proyecto -->
-  <div class="row row-cols-4" style="margin-top: 30px;
-    max-width: 98%; margin-left: auto; margin-right: auto;">
-    <div class="col d-flex flex-column">
-      <label for="proyectName" class="form-label mb-1">Nombre del proyecto</label>
-      <input id="proyectName" type="text" class="form-control-sm" placeholder="Nuevo proyecto..."/>
-    </div>
-    <div class="col d-flex flex-column">
-      <label for="startingDate" class="form-label mb-1">Fecha de inicio</label>
-      <input id="startingDate" type="date" class="form-control-sm" placeholder="Fecha de inicio..."/>
-    </div>
-    <div class="col d-flex flex-column">
-      <label for="endingDate" class="form-label mb-1">Fecha de fin</label>
-      <input id="endingDate" type="date" class="form-control-sm" placeholder="Fecha de fin..."/>
-    </div>
-    <div class="col d-flex justify-content-end align-items-end">
-      <button type="button" class="btn btn-primary btn-sm" (click)="showModal = false">Crear proyecto</button>
+  <!-- Modal para alta de nuevo proyecto -->
+  <div class="modal fade show" tabindex="-1"
+    [ngStyle]="{display: showNewProjectModal ? 'block' : 'none', background: showNewProjectModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1060;" *ngIf="showNewProjectModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Nuevo proyecto</h5>
+          <button type="button" class="btn-close" (click)="showNewProjectModal = false"></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="onCreateProject(); showNewProjectModal = false;" #newProjectForm="ngForm">
+            <div class="mb-3">
+              <label for="proyectName" class="form-label">Nombre del proyecto</label>
+              <input id="proyectName" type="text" class="form-control form-control-sm" [(ngModel)]="newProject.name"
+                name="name" required placeholder="Nuevo proyecto..." />
+            </div>
+            <div class="mb-3">
+              <label for="startingDate" class="form-label">Fecha de inicio</label>
+              <input id="startingDate" type="date" class="form-control form-control-sm" [(ngModel)]="newProject.start"
+                name="start" required placeholder="Fecha de inicio..." />
+            </div>
+            <div class="mb-3">
+              <label for="endingDate" class="form-label">Fecha de fin</label>
+              <input id="endingDate" type="date" class="form-control form-control-sm" [(ngModel)]="newProject.end"
+                name="end" required placeholder="Fecha de fin..." />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary btn-sm"
+                (click)="showNewProjectModal = false">Cancelar</button>
+              <button type="submit" class="btn btn-primary btn-sm" [disabled]="!newProjectForm.form.valid">Crear
+                proyecto</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Edicion de proyecto -->
-  <div class="row row-cols-4" style="margin-top: 5px;
-    max-width: 98%; margin-left: auto; margin-right: auto;">
-    <div class="col d-flex flex-column">
-      <label for="editProyectName" class="form-label mb-1">Seleccionar proyecto</label>
-      <select id="editProyectName" class="form-select form-select-sm">
-        <option value="" selected>Seleccionar proyecto...</option>
-        <option *ngFor="let proyecto of proyectos" [value]="proyecto.id">{{ proyecto.nombre }}</option>
-      </select>
-    </div>
-    <div class="col d-flex flex-column">
-      <label for="editNewStartingDate" class="form-label mb-1">Nueva fecha de inicio</label>
-      <input id="editNewStartingDate" type="date" class="form-control-sm" placeholder="Nueva fecha de inicio..."/>
-    </div>
-    <div class="col d-flex flex-column">
-      <label for="editEndingDate" class="form-label mb-1">Nueva fecha de fin</label>
-      <input id="editEndingDate" type="date" class="form-control-sm" placeholder="Nueva fecha de fin..."/>
-    </div>
-    <div class="col d-flex justify-content-end align-items-end">
-      <button type="button" class="btn btn-primary btn-sm" (click)="showModal = false">Modificar proyecto</button>
+  <!-- Modal para edición de proyecto -->
+  <div class="modal fade show" tabindex="-1"
+    [ngStyle]="{display: showEditProjectModal ? 'block' : 'none', background: showEditProjectModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1060;" *ngIf="showEditProjectModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar proyecto</h5>
+          <button type="button" class="btn-close" (click)="showEditProjectModal = false"></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="onEditProject(); showEditProjectModal = false;" #editProjectForm="ngForm">
+            <div class="mb-3">
+              <label for="editProyectName" class="form-label">Seleccionar proyecto</label>
+              <select id="editProyectName" class="form-select form-select-sm" [(ngModel)]="editProject.id" name="id"
+                required>
+                <option value="" selected>Seleccionar proyecto...</option>
+                <option *ngFor="let proyecto of proyectos" [value]="proyecto.id">{{ proyecto.nombre }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="editNewStartingDate" class="form-label">Nueva fecha de inicio</label>
+              <input id="editNewStartingDate" type="date" class="form-control form-control-sm"
+                [(ngModel)]="editProject.start" name="start" required placeholder="Nueva fecha de inicio..." />
+            </div>
+            <div class="mb-3">
+              <label for="editEndingDate" class="form-label">Nueva fecha de fin</label>
+              <input id="editEndingDate" type="date" class="form-control form-control-sm" [(ngModel)]="editProject.end"
+                name="end" required placeholder="Nueva fecha de fin..." />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary btn-sm"
+                (click)="showEditProjectModal = false">Cancelar</button>
+              <button type="submit" class="btn btn-primary btn-sm" [disabled]="!editProjectForm.form.valid">Modificar
+                proyecto</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
-  
-<!--   <div class="gantt-toolbar">
+
+  <!--   <div class="gantt-toolbar">
     <label for="projectSelect">Proyecto:</label>
     <select id="projectSelect">
       <option value="1">Proyecto 1</option>

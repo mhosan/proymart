@@ -16,6 +16,29 @@ import { NgIf, NgStyle, NgFor } from '@angular/common';
   providers: [TaskService, LinkService]
 })
 export class FrappeganttComponent implements OnInit {
+  showEditProjectModal = false;
+  showSelectProjectModal = false;
+  editProject = { id: '', start: '', end: '' };
+  selectedProjectId: string = '';
+
+  onSelectProject(): void {
+    // Aquí puedes agregar la lógica para manejar el cambio de proyecto activo
+    // Por ejemplo, podrías filtrar tareas por proyecto, etc.
+    // console.log('Proyecto seleccionado:', this.selectedProjectId);
+  }
+
+  onEditProject(): void {
+    if (!this.editProject.id || !this.editProject.start || !this.editProject.end) return;
+    // Aquí puedes agregar la lógica para modificar el proyecto en el array o backend
+    const idx = this.proyectos.findIndex((p: { id: string }) => p.id === this.editProject.id);
+    if (idx !== -1) {
+      // Solo actualiza fechas, el nombre se mantiene
+      // Si quieres actualizar el nombre, agrega un campo y lógica aquí
+      // this.proyectos[idx].nombre = this.editProject.nombre;
+    }
+    // Limpia el formulario
+    this.editProject = { id: '', start: '', end: '' };
+  }
   @ViewChild('frappe_gantt_here', { static: true }) ganttContainer!: ElementRef;
   gantt: any;
   frappeTasks: any[] = [];
@@ -25,6 +48,17 @@ export class FrappeganttComponent implements OnInit {
     { id: '3', nombre: 'Proyecto Demo 3' }
   ];
   newTask = { name: '', start: '', duration: 1 };
+  showNewProjectModal = false;
+  newProject = { name: '', start: '', end: '' };
+  // Método para crear un nuevo proyecto desde el modal
+  onCreateProject() {
+    if (!this.newProject.name || !this.newProject.start || !this.newProject.end) return;
+    // Aquí puedes agregar la lógica para guardar el nuevo proyecto en el array o backend
+    const newId = (Math.max(0, ...this.proyectos.map(p => +p.id)) + 1).toString();
+    this.proyectos.push({ id: newId, nombre: this.newProject.name });
+    // Limpia el formulario
+    this.newProject = { name: '', start: '', end: '' };
+  }
   showModal = false;
 
   constructor(
