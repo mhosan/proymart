@@ -4,10 +4,13 @@ import { LinkService } from '../../services/link.service';
 import { Task } from '../../models/task';
 import { Link } from '../../models/link';
 import Gantt from 'frappe-gantt';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-frappegantt',
   standalone: true,
+  imports: [FormsModule, NgIf, NgStyle],
   templateUrl: './frappegantt.component.html',
   styleUrl: './frappegantt.component.css',
   providers: [TaskService, LinkService]
@@ -16,6 +19,8 @@ export class FrappeganttComponent implements OnInit {
   @ViewChild('frappe_gantt_here', { static: true }) ganttContainer!: ElementRef;
   gantt: any;
   frappeTasks: any[] = [];
+  newTask = { name: '', start: '', duration: 1 };
+  showModal = false;
 
   constructor(
     private taskService: TaskService,
@@ -36,23 +41,29 @@ export class FrappeganttComponent implements OnInit {
     this.renderGantt();
   }
 
-  addTask() {
+  addTask(name: string, start: string, duration: number) {
     const newId = (Math.max(0, ...this.frappeTasks.map(t => +t.id)) + 1).toString();
-    const today = new Date().toISOString().split('T')[0];
     const newTask = {
       id: newId,
-      name: 'Nueva tarea',
-      start: today,
-      end: today,
+      name,
+      start,
+      end: this.calculateEndDate(start, duration),
       progress: 0,
       dependencies: ''
     };
     this.frappeTasks.push(newTask);
     this.renderGantt();
-    
+  }
+
+  onSubmit() {
+    if (!this.newTask.name || !this.newTask.start || !this.newTask.duration) return;
+    this.addTask(this.newTask.name, this.newTask.start, Number(this.newTask.duration));
+    this.newTask = { name: '', start: '', duration: 1 };
   }
 
   renderGantt() {
+    // Limpia el contenedor antes de renderizar para evitar duplicados
+    this.ganttContainer.nativeElement.innerHTML = '';
     this.gantt = new Gantt(this.ganttContainer.nativeElement, this.frappeTasks, {
       view_mode: 'Day',
       language: 'es',

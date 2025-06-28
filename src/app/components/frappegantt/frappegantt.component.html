@@ -7,7 +7,39 @@
       <option value="2">Proyecto 2</option>
     </select>
     <button type="button">Nuevo Proyecto</button>
-    <button type="button" (click)="addTask()">Agregar tarea</button>
+    <button type="button" class="btn btn-success" (click)="showModal = true">Nueva tarea</button>
+  </div>
+
+  <!-- Modal para agregar tarea -->
+  <div class="modal fade show" tabindex="-1" [ngStyle]="{display: showModal ? 'block' : 'none', background: showModal ? 'rgba(0,0,0,0.5)' : 'transparent'}" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1050;" *ngIf="showModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Agregar nueva tarea</h5>
+          <button type="button" class="btn-close" (click)="showModal = false"></button>
+        </div>
+        <div class="modal-body">
+          <form class="gantt-form" (ngSubmit)="onSubmit(); showModal = false;" #taskForm="ngForm">
+            <div class="mb-3">
+              <label for="taskName" class="form-label">Nombre de la tarea</label>
+              <input id="taskName" type="text" name="name" [(ngModel)]="newTask.name" class="form-control" placeholder="Nombre de la tarea" required />
+            </div>
+            <div class="mb-3">
+              <label for="taskStart" class="form-label">Fecha de inicio</label>
+              <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label for="taskDuration" class="form-label">Duración (días)</label>
+              <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control" min="1" required />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="showModal = false">Cancelar</button>
+              <button type="submit" class="btn btn-primary" [disabled]="!taskForm.form.valid">Agregar tarea</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div #frappe_gantt_here class="gantt-chart"></div>
