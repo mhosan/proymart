@@ -1,10 +1,11 @@
 <div class="gantt-container">
 <h4>Proyectos y tareas</h4>
+  <!-- Alta de nuevo proyecto -->
   <div class="row row-cols-4" style="margin-top: 30px;
     max-width: 98%; margin-left: auto; margin-right: auto;">
     <div class="col d-flex flex-column">
       <label for="proyectName" class="form-label mb-1">Nombre del proyecto</label>
-      <input id="proyectName" type="text" class="form-control-sm" placeholder="Buscar proyecto..."/>
+      <input id="proyectName" type="text" class="form-control-sm" placeholder="Nuevo proyecto..."/>
     </div>
     <div class="col d-flex flex-column">
       <label for="startingDate" class="form-label mb-1">Fecha de inicio</label>
@@ -14,8 +15,31 @@
       <label for="endingDate" class="form-label mb-1">Fecha de fin</label>
       <input id="endingDate" type="date" class="form-control-sm" placeholder="Fecha de fin..."/>
     </div>
-    <div class="col d-flex justify-content-center align-items-end">
+    <div class="col d-flex justify-content-end align-items-end">
       <button type="button" class="btn btn-primary btn-sm" (click)="showModal = false">Crear proyecto</button>
+    </div>
+  </div>
+
+  <!-- Edicion de proyecto -->
+  <div class="row row-cols-4" style="margin-top: 5px;
+    max-width: 98%; margin-left: auto; margin-right: auto;">
+    <div class="col d-flex flex-column">
+      <label for="editProyectName" class="form-label mb-1">Seleccionar proyecto</label>
+      <select id="editProyectName" class="form-select form-select-sm">
+        <option value="" selected>Seleccionar proyecto...</option>
+        <option *ngFor="let proyecto of proyectos" [value]="proyecto.id">{{ proyecto.nombre }}</option>
+      </select>
+    </div>
+    <div class="col d-flex flex-column">
+      <label for="editNewStartingDate" class="form-label mb-1">Nueva fecha de inicio</label>
+      <input id="editNewStartingDate" type="date" class="form-control-sm" placeholder="Nueva fecha de inicio..."/>
+    </div>
+    <div class="col d-flex flex-column">
+      <label for="editEndingDate" class="form-label mb-1">Nueva fecha de fin</label>
+      <input id="editEndingDate" type="date" class="form-control-sm" placeholder="Nueva fecha de fin..."/>
+    </div>
+    <div class="col d-flex justify-content-end align-items-end">
+      <button type="button" class="btn btn-primary btn-sm" (click)="showModal = false">Modificar proyecto</button>
     </div>
   </div>
   

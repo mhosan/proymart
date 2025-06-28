@@ -5,12 +5,12 @@ import { Task } from '../../models/task';
 import { Link } from '../../models/link';
 import Gantt from 'frappe-gantt';
 import { FormsModule } from '@angular/forms';
-import { NgIf, NgStyle } from '@angular/common';
+import { NgIf, NgStyle, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-frappegantt',
   standalone: true,
-  imports: [FormsModule, NgIf, NgStyle],
+  imports: [FormsModule, NgIf, NgStyle, NgFor],
   templateUrl: './frappegantt.component.html',
   styleUrl: './frappegantt.component.css',
   providers: [TaskService, LinkService]
@@ -19,6 +19,11 @@ export class FrappeganttComponent implements OnInit {
   @ViewChild('frappe_gantt_here', { static: true }) ganttContainer!: ElementRef;
   gantt: any;
   frappeTasks: any[] = [];
+  proyectos: { id: string, nombre: string }[] = [
+    { id: '1', nombre: 'Proyecto Demo 1' },
+    { id: '2', nombre: 'Proyecto Demo 2' },
+    { id: '3', nombre: 'Proyecto Demo 3' }
+  ];
   newTask = { name: '', start: '', duration: 1 };
   showModal = false;
 
@@ -38,6 +43,8 @@ export class FrappeganttComponent implements OnInit {
       progress: Math.round((task.progress || 0) * 100),
       dependencies: this.getDependencies(task.id, links)
     }));
+    // Llenar el array de proyectos para el select (descomentar para usar datos reales)
+    //this.proyectos = this.frappeTasks.map(t => ({ id: t.id, nombre: t.name }));
     this.renderGantt();
   }
 
