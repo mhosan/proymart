@@ -1,6 +1,26 @@
 <div class="gantt-container">
 
-  <div class="gantt-toolbar">
+  <div class="row">
+    <h4>Proyectos y tareas</h4>
+    <div class="col">
+      <label for="proyectName" class="form-label">Nombre del proyecto</label>
+      <input id="proyectName" type="text" class="form-control" placeholder="Buscar proyecto..."/>
+    </div>
+    <div class="col">
+      <label for="startingDate" class="form-label">Fecha de inicio</label>
+      <input id="startingDate" type="date" class="form-control" placeholder="Fecha de inicio..."/>
+    </div>
+    <div class="col">
+      <label for="endingDate" class="form-label">Fecha de fin</label>
+      <input id="endingDate" type="date" class="form-control" placeholder="Fecha de fin..."/>
+    </div>
+    <div class="col">
+      <label for="endingDate" class="form-label">Fecha de fin</label>
+      <button type="button" class="btn btn-primary" (click)="showModal = false">Crear proyecto</button>
+    </div>
+  </div>
+  
+<!--   <div class="gantt-toolbar">
     <label for="projectSelect">Proyecto:</label>
     <select id="projectSelect">
       <option value="1">Proyecto 1</option>
@@ -9,9 +29,11 @@
     <button type="button">Nuevo Proyecto</button>
     <button type="button" class="btn btn-success" (click)="showModal = true">Nueva tarea</button>
   </div>
-
+ -->
   <!-- Modal para agregar tarea -->
-  <div class="modal fade show" tabindex="-1" [ngStyle]="{display: showModal ? 'block' : 'none', background: showModal ? 'rgba(0,0,0,0.5)' : 'transparent'}" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1050;" *ngIf="showModal">
+  <div class="modal fade show" tabindex="-1" [ngStyle]="{display: showModal ? 'block' : 'none', 
+    background: showModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1050;" *ngIf="showModal">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -22,15 +44,18 @@
           <form class="gantt-form" (ngSubmit)="onSubmit(); showModal = false;" #taskForm="ngForm">
             <div class="mb-3">
               <label for="taskName" class="form-label">Nombre de la tarea</label>
-              <input id="taskName" type="text" name="name" [(ngModel)]="newTask.name" class="form-control" placeholder="Nombre de la tarea" required />
+              <input id="taskName" type="text" name="name" [(ngModel)]="newTask.name" class="form-control"
+                placeholder="Nombre de la tarea" required />
             </div>
             <div class="mb-3">
               <label for="taskStart" class="form-label">Fecha de inicio</label>
-              <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start" class="form-control" required />
+              <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start" class="form-control"
+                required />
             </div>
             <div class="mb-3">
               <label for="taskDuration" class="form-label">Duración (días)</label>
-              <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control" min="1" required />
+              <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control"
+                min="1" required />
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" (click)="showModal = false">Cancelar</button>
@@ -43,5 +68,5 @@
   </div>
 
   <div #frappe_gantt_here class="gantt-chart"></div>
-  
+
 </div>

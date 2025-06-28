@@ -1,5 +1,5 @@
 <app-header></app-header>
 <main><router-outlet></router-outlet></main>
-<div style="max-height: 14vh; overflow: hidden;">
+<div *ngIf="showFooter" style="max-height: 14vh; overflow: hidden;">
   <app-footer></app-footer>
 </div>
