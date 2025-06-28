@@ -1,3 +1,4 @@
+/* Revertido: sin forzar altura 100% en grilla ni SVG */
 /* .gantt-chart {
   flex: 1 1 0;
   position: relative;
@@ -37,10 +38,10 @@
     position: relative;
     overflow: auto;
     font-size: 12px;
-    height: 120vh;
+    height: auto;
     width: 100%;
     border-radius: 8px;
-    margin-top: 2vh;
+    bottom: 7vh;
 
     & .popup-wrapper {
         position: absolute;
@@ -267,10 +268,12 @@
     }
 }
 
-.gantt {
+ .gantt {
     user-select: none;
     -webkit-user-select: none;
-    position: absolute;
+    position: relative;
+    width: 100%;
+    height: auto;
 
     & .grid-background {
         fill: none;
