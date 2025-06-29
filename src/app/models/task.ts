@@ -8,4 +8,5 @@ export class Task {
     priority?: number;
     users?: number[];
     type?: string;
+    project_id?: number | string;
 }

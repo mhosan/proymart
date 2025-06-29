@@ -48,16 +48,23 @@ export class FrappeganttComponent implements OnInit {
     } catch (error) {
       console.error('Error al cargar proyectos:', error);
     }
-    const tasks = await this.taskService.get();
-    const links = await this.linkService.get();
-    this.frappeTasks = tasks.map(task => ({
-      id: String(task.id),
-      name: task.text,
-      start: task.start_date.split(' ')[0],
-      end: this.calculateEndDate(task.start_date, task.duration), 
-      progress: Math.round((task.progress || 0) * 100),
-      dependencies: this.getDependencies(task.id, links)
-    }));
+    // Solo cargar tareas si hay un proyecto activo
+    if (this.selectedProjectId) {
+      const tasks = await this.taskService.get();
+      const links = await this.linkService.get();
+      // Filtrar tareas por el proyecto activo si existe relación
+      // Suponiendo que las tareas tienen un campo project_id
+      this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
+        id: String(task.id),
+        name: task.text,
+        start: task.start_date.split(' ')[0],
+        end: this.calculateEndDate(task.start_date, task.duration), 
+        progress: Math.round((task.progress || 0) * 100),
+        dependencies: this.getDependencies(task.id, links)
+      }));
+    } else {
+      this.frappeTasks = [];
+    }
     this.renderGantt();
   }
 
@@ -106,15 +113,31 @@ export class FrappeganttComponent implements OnInit {
     this.editTask = { id: '', name: '', start: '', duration: 1 };
   }
 
-  onSelectProject(): void {
-    // Si no hay proyecto seleccionado, limpiar selección
+  async onSelectProject(): Promise<void> {
+    // Si no hay proyecto seleccionado, limpiar selección y tareas
     if (!this.selectedProjectId) {
       this.selectedProjectId = '';
+      this.frappeTasks = [];
+      this.renderGantt();
       return;
     }
-    // Aquí puedes agregar lógica para cargar tareas del proyecto seleccionado
-    // Si tienes lógica de filtrado, aplícala aquí
-    // Si no, asegúrate de que el valor seleccionado se refleje correctamente
+    // Al seleccionar un proyecto, cargar solo las tareas de ese proyecto desde la base de datos
+    try {
+      const tasks = await this.taskService.get();
+      const links = await this.linkService.get();
+      this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
+        id: String(task.id),
+        name: task.text,
+        start: task.start_date.split(' ')[0],
+        end: this.calculateEndDate(task.start_date, task.duration),
+        progress: Math.round((task.progress || 0) * 100),
+        dependencies: this.getDependencies(task.id, links)
+      }));
+    } catch (error) {
+      console.error('Error al cargar tareas del proyecto:', error);
+      this.frappeTasks = [];
+    }
+    this.renderGantt();
   }
 
   onEditProject(): void {
@@ -155,6 +178,11 @@ export class FrappeganttComponent implements OnInit {
   }
 
   addTask(name: string, start: string, duration: number) {
+    // No permitir alta de tareas si no hay proyecto activo
+    if (!this.selectedProjectId) {
+      alert('Debe seleccionar un proyecto activo antes de agregar tareas.');
+      return;
+    }
     const newId = (Math.max(0, ...this.frappeTasks.map(t => +t.id)) + 1).toString();
     const newTask = {
       id: newId,
@@ -162,13 +190,18 @@ export class FrappeganttComponent implements OnInit {
       start,
       end: this.calculateEndDate(start, duration),
       progress: 0,
-      dependencies: ''
+      dependencies: '',
+      project_id: this.selectedProjectId // Asignar el proyecto activo
     };
     this.frappeTasks.push(newTask);
     this.renderGantt();
   }
 
   onSubmit() {
+    if (!this.selectedProjectId) {
+      alert('Debe seleccionar un proyecto activo antes de agregar tareas.');
+      return;
+    }
     if (!this.newTask.name || !this.newTask.start || !this.newTask.duration) return;
     this.addTask(this.newTask.name, this.newTask.start, Number(this.newTask.duration));
     this.newTask = { name: '', start: '', duration: 1 };

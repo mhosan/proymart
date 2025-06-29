@@ -41,7 +41,8 @@ export class TaskService {
         parent: item.parent || 0,
         priority: item.priority,
         users: item.users,
-        type: item.type
+        type: item.type,
+        project_id: item.idProject // Usar el campo correcto de la base de datos
       }));
       console.log('TaskService.get() data from Supabase (transformed):', transformedData);
       return transformedData;
