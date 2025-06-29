@@ -32,11 +32,7 @@ export class FrappeganttComponent implements OnInit {
   showSelectProjectModal = false;
   editProject = { id: '', start: '', end: '' };
   selectedProjectId: string = '';
-  proyectos: { id: string, nombre: string }[] = [
-    { id: '1', nombre: 'Proyecto Demo 1' },
-    { id: '2', nombre: 'Proyecto Demo 2' },
-    { id: '3', nombre: 'Proyecto Demo 3' }
-  ];
+  proyectos: { id: string, nombre: string }[] = [];
 
   constructor(
     private taskService: TaskService,
@@ -45,6 +41,13 @@ export class FrappeganttComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+    // Cargar proyectos desde la base de datos al iniciar el componente
+    try {
+      const proyectosBD = await this.projectService.getAll();
+      this.proyectos = proyectosBD.map(p => ({ id: String(p.id), nombre: p.name }));
+    } catch (error) {
+      console.error('Error al cargar proyectos:', error);
+    }
     const tasks = await this.taskService.get();
     const links = await this.linkService.get();
     this.frappeTasks = tasks.map(task => ({
@@ -55,8 +58,6 @@ export class FrappeganttComponent implements OnInit {
       progress: Math.round((task.progress || 0) * 100),
       dependencies: this.getDependencies(task.id, links)
     }));
-    // Llenar el array de proyectos para el select (descomentar para usar datos reales)
-    //this.proyectos = this.frappeTasks.map(t => ({ id: t.id, nombre: t.name }));
     this.renderGantt();
   }
 
@@ -106,9 +107,14 @@ export class FrappeganttComponent implements OnInit {
   }
 
   onSelectProject(): void {
-    // Aquí puedes agregar la lógica para manejar el cambio de proyecto activo
-    // Por ejemplo, podrías filtrar tareas por proyecto, etc.
-    // console.log('Proyecto seleccionado:', this.selectedProjectId);
+    // Si no hay proyecto seleccionado, limpiar selección
+    if (!this.selectedProjectId) {
+      this.selectedProjectId = '';
+      return;
+    }
+    // Aquí puedes agregar lógica para cargar tareas del proyecto seleccionado
+    // Si tienes lógica de filtrado, aplícala aquí
+    // Si no, asegúrate de que el valor seleccionado se refleje correctamente
   }
 
   onEditProject(): void {
