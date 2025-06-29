@@ -8,7 +8,7 @@ import { SupabaseService } from '../services/supabase.service';
   providedIn: 'root'
 })
 export class TaskService {
-  constructor(private supabaseService: SupabaseService) { } 
+  constructor(private supabaseService: SupabaseService) { }
 
   // Método auxiliar para formatear fechas al formato de Gantt
   private formatDateForGantt(dateString: string | Date): string {
@@ -25,6 +25,10 @@ export class TaskService {
     return `${year}-${month}-${day} ${hours}:${minutes}`;
   }
 
+  /****************************************************************************
+   * Obtiene todas las tareas de la base de datos.
+   * @returns Una lista de objetos Task.
+   ***************************************************************************/
   async get(): Promise<Task[]> {
     try {
       const data = await this.supabaseService.getDataFromTable('task');
@@ -48,7 +52,11 @@ export class TaskService {
     }
   }
 
-
+  /****************************************************************************
+   * Inserta una nueva tarea en la base de datos.
+   * @param task Objeto de tarea a insertar.
+   * @returns La tarea insertada con el ID asignado por la base de datos.
+   ***************************************************************************/
   async insert(task: Task): Promise<Task> {
     try {
       console.log('Objeto de tarea antes de insertar:', task);
@@ -60,18 +68,18 @@ export class TaskService {
       delete taskToInsert['!nativeeditor_id']; // Eliminar la propiedad específica (si existe)
       delete taskToInsert['end_date']; // Eliminar la propiedad end_date
 
-     // Ensure users is an array of integers
-     if (taskToInsert.users !== null && taskToInsert.users !== undefined) {
-      if (!Array.isArray(taskToInsert.users)) {
-        // If it's not an array, wrap it in an array
-        taskToInsert.users = [taskToInsert.users];
+      // Ensure users is an array of integers
+      if (taskToInsert.users !== null && taskToInsert.users !== undefined) {
+        if (!Array.isArray(taskToInsert.users)) {
+          // If it's not an array, wrap it in an array
+          taskToInsert.users = [taskToInsert.users];
+        }
+        // Ensure all elements in the array are integers (optional, but good practice)
+        taskToInsert.users = taskToInsert.users.map((userId: any) => parseInt(userId, 10)).filter((userId: number) => !isNaN(userId));
+      } else {
+        // If users is null or undefined, set it to an empty array
+        taskToInsert.users = [];
       }
-      // Ensure all elements in the array are integers (optional, but good practice)
-      taskToInsert.users = taskToInsert.users.map((userId: any) => parseInt(userId, 10)).filter((userId: number) => !isNaN(userId));
-    } else {
-       // If users is null or undefined, set it to an empty array
-       taskToInsert.users = [];
-    }
 
       const insertedTask = await this.supabaseService.insertIntoTable('task', taskToInsert);
 
@@ -79,22 +87,22 @@ export class TaskService {
       // y los IDs temporales/nativos.
       // Nos aseguramos de que el objeto retornado incluya las propiedades nativas si la inserción fue exitosa
       if (insertedTask) {
-         // Copiar propiedades nativas del objeto original 'task' al objeto insertado retornado
-         // Esto es crucial para que dhtmlxGantt DataProcessor pueda actualizar su estado interno
-         // con el ID real de la base de datos.
-         // Nota: Las propiedades nativas (!...) no se envían a la BD, solo se usan para sincronizar el frontend
-         // con el backend.
-         if (task.hasOwnProperty('!nativeeditor_status')) {
-             (insertedTask as any)['!nativeeditor_status'] = (task as any)['!nativeeditor_status'];
-         }
-          if (task.hasOwnProperty('!nativeeditor_id')) {
-             (insertedTask as any)['!nativeeditor_id'] = (task as any)['!nativeeditor_id'];
-         }
+        // Copiar propiedades nativas del objeto original 'task' al objeto insertado retornado
+        // Esto es crucial para que dhtmlxGantt DataProcessor pueda actualizar su estado interno
+        // con el ID real de la base de datos.
+        // Nota: Las propiedades nativas (!...) no se envían a la BD, solo se usan para sincronizar el frontend
+        // con el backend.
+        if (task.hasOwnProperty('!nativeeditor_status')) {
+          (insertedTask as any)['!nativeeditor_status'] = (task as any)['!nativeeditor_status'];
+        }
+        if (task.hasOwnProperty('!nativeeditor_id')) {
+          (insertedTask as any)['!nativeeditor_id'] = (task as any)['!nativeeditor_id'];
+        }
 
-         // Formatear la fecha si es necesario para la respuesta
-         if (insertedTask.start_date) {
-             insertedTask.start_date = this.formatDateForGantt(insertedTask.start_date);
-         }
+        // Formatear la fecha si es necesario para la respuesta
+        if (insertedTask.start_date) {
+          insertedTask.start_date = this.formatDateForGantt(insertedTask.start_date);
+        }
       }
 
       return insertedTask as Task; // Retornar el objeto insertado (con posibles propiedades nativas reañadidas)
@@ -106,6 +114,11 @@ export class TaskService {
     }
   }
 
+  /****************************************************************************
+   * Actualiza una tarea existente en la base de datos.
+   * @param task Objeto de tarea a actualizar.
+   * @returns void
+   ***************************************************************************/
   async update(task: Task): Promise<void> {
     try {
       const taskToSend: any = { ...task }; // Crea una copia para no modificar el objeto original si es necesario
@@ -116,17 +129,17 @@ export class TaskService {
       delete taskToSend['end_date']; // Eliminar la propiedad end_date
 
       // Asegurarse de que 'users' sea un array si existe y no es null/undefined
-     if (taskToSend.users !== null && taskToSend.users !== undefined) {
-      if (!Array.isArray(taskToSend.users)) {
-        // Si no es un array, envolverlo en un array
-        taskToSend.users = [taskToSend.users];
+      if (taskToSend.users !== null && taskToSend.users !== undefined) {
+        if (!Array.isArray(taskToSend.users)) {
+          // Si no es un array, envolverlo en un array
+          taskToSend.users = [taskToSend.users];
+        }
+        // Asegurarse de que todos los elementos en el array sean enteros (opcional, pero buena práctica)
+        taskToSend.users = taskToSend.users.map((userId: any) => parseInt(userId, 10)).filter((userId: number) => !isNaN(userId));
+      } else {
+        // Si users es null o undefined, establecerlo a un array vacío para evitar errores en la BD
+        taskToSend.users = [];
       }
-      // Asegurarse de que todos los elementos en el array sean enteros (opcional, pero buena práctica)
-      taskToSend.users = taskToSend.users.map((userId: any) => parseInt(userId, 10)).filter((userId: number) => !isNaN(userId));
-    } else {
-       // Si users es null o undefined, establecerlo a un array vacío para evitar errores en la BD
-       taskToSend.users = [];
-    }
 
       await this.supabaseService.updateTableById('task', taskToSend.id, taskToSend);
     } catch (error) {
@@ -136,12 +149,17 @@ export class TaskService {
     }
   }
 
+  /****************************************************************************
+   * Elimina una tarea de la base de datos por su ID.
+   * @param id ID de la tarea a eliminar.
+   * @returns void
+   ***************************************************************************/ 
   async remove(id: number): Promise<void> {
     try {
       await this.supabaseService.deleteFromTableById('task', id);
     } catch (error) {
       console.error(`Error deleting task with id ${id} from Supabase:`, error);
-      HandleError(error); 
+      HandleError(error);
       throw error; // Re-lanza el error
     }
   }

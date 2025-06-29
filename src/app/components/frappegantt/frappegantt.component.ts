@@ -15,7 +15,48 @@ import { NgIf, NgStyle, NgFor } from '@angular/common';
   styleUrl: './frappegantt.component.css',
   providers: [TaskService, LinkService]
 })
+
 export class FrappeganttComponent implements OnInit {
+  @ViewChild('frappe_gantt_here', { static: true }) ganttContainer!: ElementRef;
+
+  gantt: any;
+  frappeTasks: any[] = [];
+  newTask = { name: '', start: '', duration: 1 };
+  showNewProjectModal = false;
+  newProject = { name: '', start: '', end: '' };
+  showModal = false;
+  showEditTaskModal = false;
+  showEditProjectModal = false;
+  showSelectProjectModal = false;
+  editProject = { id: '', start: '', end: '' };
+  selectedProjectId: string = '';
+  proyectos: { id: string, nombre: string }[] = [
+    { id: '1', nombre: 'Proyecto Demo 1' },
+    { id: '2', nombre: 'Proyecto Demo 2' },
+    { id: '3', nombre: 'Proyecto Demo 3' }
+  ];
+
+  constructor(
+    private taskService: TaskService,
+    private linkService: LinkService
+  ) { }
+
+  async ngOnInit() {
+    const tasks = await this.taskService.get();
+    const links = await this.linkService.get();
+    this.frappeTasks = tasks.map(task => ({
+      id: String(task.id),
+      name: task.text,
+      start: task.start_date.split(' ')[0],
+      end: this.calculateEndDate(task.start_date, task.duration),
+      progress: Math.round((task.progress || 0) * 100),
+      dependencies: this.getDependencies(task.id, links)
+    }));
+    // Llenar el array de proyectos para el select (descomentar para usar datos reales)
+    //this.proyectos = this.frappeTasks.map(t => ({ id: t.id, nombre: t.name }));
+    this.renderGantt();
+  }
+
   onDeleteTask() {
     if (!this.editTask.id) return;
     const idx = this.frappeTasks.findIndex(t => String(t.id) === String(this.editTask.id));
@@ -38,7 +79,7 @@ export class FrappeganttComponent implements OnInit {
       if (t.start && t.end) {
         const startDate = new Date(t.start);
         const endDate = new Date(t.end);
-        const diff = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000*60*60*24)));
+        const diff = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
         this.editTask.duration = diff;
       } else {
         this.editTask.duration = 1;
@@ -60,11 +101,6 @@ export class FrappeganttComponent implements OnInit {
     // Limpia el formulario
     this.editTask = { id: '', name: '', start: '', duration: 1 };
   }
-  showEditTaskModal = false;
-  showEditProjectModal = false;
-  showSelectProjectModal = false;
-  editProject = { id: '', start: '', end: '' };
-  selectedProjectId: string = '';
 
   onSelectProject(): void {
     // Aquí puedes agregar la lógica para manejar el cambio de proyecto activo
@@ -84,17 +120,7 @@ export class FrappeganttComponent implements OnInit {
     // Limpia el formulario
     this.editProject = { id: '', start: '', end: '' };
   }
-  @ViewChild('frappe_gantt_here', { static: true }) ganttContainer!: ElementRef;
-  gantt: any;
-  frappeTasks: any[] = [];
-  proyectos: { id: string, nombre: string }[] = [
-    { id: '1', nombre: 'Proyecto Demo 1' },
-    { id: '2', nombre: 'Proyecto Demo 2' },
-    { id: '3', nombre: 'Proyecto Demo 3' }
-  ];
-  newTask = { name: '', start: '', duration: 1 };
-  showNewProjectModal = false;
-  newProject = { name: '', start: '', end: '' };
+
   // Método para crear un nuevo proyecto desde el modal
   onCreateProject() {
     if (!this.newProject.name || !this.newProject.start || !this.newProject.end) return;
@@ -103,28 +129,6 @@ export class FrappeganttComponent implements OnInit {
     this.proyectos.push({ id: newId, nombre: this.newProject.name });
     // Limpia el formulario
     this.newProject = { name: '', start: '', end: '' };
-  }
-  showModal = false;
-
-  constructor(
-    private taskService: TaskService,
-    private linkService: LinkService
-  ) {}
-
-  async ngOnInit() {
-    const tasks = await this.taskService.get();
-    const links = await this.linkService.get();
-    this.frappeTasks = tasks.map(task => ({
-      id: String(task.id),
-      name: task.text,
-      start: task.start_date.split(' ')[0],
-      end: this.calculateEndDate(task.start_date, task.duration),
-      progress: Math.round((task.progress || 0) * 100),
-      dependencies: this.getDependencies(task.id, links)
-    }));
-    // Llenar el array de proyectos para el select (descomentar para usar datos reales)
-    //this.proyectos = this.frappeTasks.map(t => ({ id: t.id, nombre: t.name }));
-    this.renderGantt();
   }
 
   addTask(name: string, start: string, duration: number) {
@@ -156,9 +160,9 @@ export class FrappeganttComponent implements OnInit {
       on_click: (task: any) => {
         // No hacer nada en click simple
       },
-      on_date_change: () => {},
-      on_progress_change: () => {},
-      on_view_change: () => {}
+      on_date_change: () => { },
+      on_progress_change: () => { },
+      on_view_change: () => { }
     });
   }
 
