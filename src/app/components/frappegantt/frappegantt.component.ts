@@ -1,6 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { TaskService } from '../../services/task.service';
 import { LinkService } from '../../services/link.service';
+import { ProjectService } from '../../services/project.service';
+import { Project } from '../../models/project';
 import { Task } from '../../models/task';
 import { Link } from '../../models/link';
 import Gantt from 'frappe-gantt';
@@ -38,7 +40,8 @@ export class FrappeganttComponent implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private linkService: LinkService
+    private linkService: LinkService,
+    private projectService: ProjectService
   ) { }
 
   async ngOnInit() {
@@ -48,7 +51,7 @@ export class FrappeganttComponent implements OnInit {
       id: String(task.id),
       name: task.text,
       start: task.start_date.split(' ')[0],
-      end: this.calculateEndDate(task.start_date, task.duration),
+      end: this.calculateEndDate(task.start_date, task.duration), 
       progress: Math.round((task.progress || 0) * 100),
       dependencies: this.getDependencies(task.id, links)
     }));
@@ -121,12 +124,26 @@ export class FrappeganttComponent implements OnInit {
     this.editProject = { id: '', start: '', end: '' };
   }
 
-  // Método para crear un nuevo proyecto desde el modal
-  onCreateProject() {
+  /*********************************************************************
+   * Crea un nuevo proyecto y lo guarda usando ProjectService.
+   * Si el proyecto tiene nombre, fecha de inicio y fin, lo guarda en la base de datos
+   * y lo agrega al array de proyectos locales.
+   ********************************************************************/
+  async onCreateProject() {
     if (!this.newProject.name || !this.newProject.start || !this.newProject.end) return;
-    // Aquí puedes agregar la lógica para guardar el nuevo proyecto en el array o backend
-    const newId = (Math.max(0, ...this.proyectos.map(p => +p.id)) + 1).toString();
-    this.proyectos.push({ id: newId, nombre: this.newProject.name });
+    const project: Project = {
+      name: this.newProject.name,
+      start_date: this.newProject.start,
+      end_date: this.newProject.end
+    };
+    try {
+      const saved = await this.projectService.insert(project);
+      if (saved) {
+        this.proyectos.push({ id: String(saved.id), nombre: saved.name });
+      }
+    } catch (error) {
+      console.error('Error al guardar el proyecto:', error);
+    }
     // Limpia el formulario
     this.newProject = { name: '', start: '', end: '' };
   }
