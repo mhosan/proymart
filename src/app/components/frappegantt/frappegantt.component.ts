@@ -23,7 +23,7 @@ export class FrappeganttComponent implements OnInit {
 
   gantt: any;
   frappeTasks: any[] = [];
-  newTask = { name: '', start: '', duration: 1 };
+  newTask = { name: '', start: '', duration: 1, progress: 0 };
   showNewProjectModal = false;
   newProject = { name: '', start: '', end: '' };
   showModal = false;
@@ -32,7 +32,8 @@ export class FrappeganttComponent implements OnInit {
   showSelectProjectModal = false;
   editProject = { id: '', start: '', end: '' };
   selectedProjectId: string = '';
-  proyectos: { id: string, nombre: string }[] = [];
+  proyectos: { id: string, nombre: string, start?: string, end?: string }[] = [];
+  editTask = { id: '', name: '', start: '', duration: 1, progress: 0 };
 
   constructor(
     private taskService: TaskService,
@@ -44,10 +45,11 @@ export class FrappeganttComponent implements OnInit {
     // Cargar proyectos desde la base de datos al iniciar el componente
     try {
       const proyectosBD = await this.projectService.getAll();
-      this.proyectos = proyectosBD.map(p => ({ id: String(p.id), nombre: p.name }));
+      this.proyectos = proyectosBD.map(p => ({ id: String(p.id), nombre: p.name, start: p.start_date, end: p.end_date }));
     } catch (error) {
       console.error('Error al cargar proyectos:', error);
     }
+
     // Solo cargar tareas si hay un proyecto activo
     if (this.selectedProjectId) {
       const tasks = await this.taskService.get();
@@ -58,7 +60,7 @@ export class FrappeganttComponent implements OnInit {
         id: String(task.id),
         name: task.text,
         start: task.start_date.split(' ')[0],
-        end: this.calculateEndDate(task.start_date, task.duration), 
+        end: this.calculateEndDate(task.start_date, task.duration),
         progress: Math.round((task.progress || 0) * 100),
         dependencies: this.getDependencies(task.id, links)
       }));
@@ -68,6 +70,11 @@ export class FrappeganttComponent implements OnInit {
     this.renderGantt();
   }
 
+  /************************************************************
+   * 
+   * Borra la tarea seleccionada y actualiza el Gantt.
+   * @returns 
+   ***********************************************************/
   onDeleteTask() {
     if (!this.editTask.id) return;
     // Elimina la tarea de la base de datos y recarga la lista
@@ -91,12 +98,16 @@ export class FrappeganttComponent implements OnInit {
         alert('Error al eliminar la tarea. Ver consola para más detalles.');
       })
       .finally(() => {
-        this.editTask = { id: '', name: '', start: '', duration: 1 };
+        this.editTask = { id: '', name: '', start: '', duration: 1, progress: 0 };
         this.showEditTaskModal = false;
       });
   }
-  editTask = { id: '', name: '', start: '', duration: 1 };
 
+  /************************************************************
+   * 
+   * Abre el modal para editar la tarea seleccionada.
+   * Carga los datos de la tarea en el formulario de edición.
+   ***********************************************************/
   onSelectEditTask() {
     // Busca la tarea seleccionada y carga sus datos en el formulario
     const t = this.frappeTasks.find(task => String(task.id) === String(this.editTask.id));
@@ -112,13 +123,19 @@ export class FrappeganttComponent implements OnInit {
       } else {
         this.editTask.duration = 1;
       }
+      this.editTask.progress = t.progress ?? 0;
     } else {
       this.editTask.name = '';
       this.editTask.start = '';
       this.editTask.duration = 1;
+      this.editTask.progress = 0;
     }
   }
-
+  /************************************************************************
+   * 
+   * Actualiza la tarea seleccionada en la base de datos y recarga el Gantt.
+   * Si no hay tarea seleccionada, no hace nada.
+   ***********************************************************************/
   onEditTask() {
     // Actualizar la tarea en la base de datos y recargar la lista
     if (!this.editTask.id) return;
@@ -128,7 +145,8 @@ export class FrappeganttComponent implements OnInit {
       text: this.editTask.name,
       start_date: this.editTask.start,
       duration: this.editTask.duration,
-      // Puedes agregar más campos si los editas
+      // Guardar el progreso como decimal (0-1)
+      progress: Number(this.editTask.progress) / 100,
       idProject: this.selectedProjectId // Usar el campo real de la base de datos
     };
     this.taskService.update(updatedTask)
@@ -151,10 +169,15 @@ export class FrappeganttComponent implements OnInit {
         alert('Error al actualizar la tarea. Ver consola para más detalles.');
       })
       .finally(() => {
-        this.editTask = { id: '', name: '', start: '', duration: 1 };
+        this.editTask = { id: '', name: '', start: '', duration: 1, progress: 0 };
       });
   }
 
+  /*********************************************************************
+   * 
+   * Abre el modal para seleccionar un proyecto.
+   * Si no hay proyectos, muestra un mensaje.
+   ********************************************************************/  
   async onSelectProject(): Promise<void> {
     // Si no hay proyecto seleccionado, limpiar selección y tareas
     if (!this.selectedProjectId) {
@@ -182,24 +205,50 @@ export class FrappeganttComponent implements OnInit {
     this.renderGantt();
   }
 
-  onEditProject(): void {
+  /*********************************************************************
+   * 
+   * Abre el modal para crear un nuevo proyecto.
+   * Limpia el formulario de creación de proyecto.
+   ********************************************************************/  
+  async onEditProject() {
     if (!this.editProject.id || !this.editProject.start || !this.editProject.end) return;
-    // Aquí puedes agregar la lógica para modificar el proyecto en el array o backend
+    // Buscar el proyecto original para obtener el nombre
     const idx = this.proyectos.findIndex((p: { id: string }) => p.id === this.editProject.id);
     if (idx !== -1) {
-      // Solo actualiza fechas, el nombre se mantiene
-      // Si quieres actualizar el nombre, agrega un campo y lógica aquí
-      // this.proyectos[idx].nombre = this.editProject.nombre;
+      const proyectoOriginal = this.proyectos[idx];
+      const updatedProject = {
+        id: Number(this.editProject.id),
+        name: proyectoOriginal.nombre,
+        start_date: this.editProject.start,
+        end_date: this.editProject.end
+      };
+      try {
+        const saved = await this.projectService.update(updatedProject);
+        if (saved) {
+          // Actualizar el array local
+          this.proyectos[idx] = {
+            id: String(saved.id),
+            nombre: saved.name,
+            start: saved.start_date,
+            end: saved.end_date
+          };
+        }
+      } catch (error) {
+        console.error('Error al actualizar el proyecto:', error);
+        alert('Error al actualizar el proyecto. Ver consola para más detalles.');
+      }
     }
     // Limpia el formulario
     this.editProject = { id: '', start: '', end: '' };
   }
 
   /*********************************************************************
+   * 
    * Crea un nuevo proyecto y lo guarda usando ProjectService.
-   * Si el proyecto tiene nombre, fecha de inicio y fin, lo guarda en la base de datos
-   * y lo agrega al array de proyectos locales.
-   ********************************************************************/
+   * Si el proyecto tiene nombre, fecha de inicio y fin, lo guarda en 
+   * la base de datos y lo agrega al array de proyectos locales.
+   
+  ********************************************************************/
   async onCreateProject() {
     if (!this.newProject.name || !this.newProject.start || !this.newProject.end) return;
     const project: Project = {
@@ -219,7 +268,12 @@ export class FrappeganttComponent implements OnInit {
     this.newProject = { name: '', start: '', end: '' };
   }
 
-  async addTask(name: string, start: string, duration: number) {
+  /*********************************************************************
+   * 
+   * Agrega una nueva tarea al proyecto activo.
+   * Si no hay proyecto activo, muestra un mensaje de alerta.
+   ********************************************************************/  
+  async addTask(name: string, start: string, duration: number, progress: number) {
     // No permitir alta de tareas si no hay proyecto activo
     if (!this.selectedProjectId) {
       alert('Debe seleccionar un proyecto activo antes de agregar tareas.');
@@ -230,7 +284,8 @@ export class FrappeganttComponent implements OnInit {
       text: name,
       start_date: start,
       duration: duration,
-      progress: 0,
+      // Guardar el progreso como decimal (0-1)
+      progress: Number(progress) / 100,
       parent: 0,
       priority: null,
       users: [],
@@ -257,16 +312,27 @@ export class FrappeganttComponent implements OnInit {
     }
   }
 
+  /*********************************************************************
+   * 
+   * Maneja el envío del formulario para agregar una nueva tarea.
+   * Valida que haya un proyecto activo y que los campos de la tarea
+   * estén completos.
+   ********************************************************************/  
   onSubmit() {
     if (!this.selectedProjectId) {
       alert('Debe seleccionar un proyecto activo antes de agregar tareas.');
       return;
     }
     if (!this.newTask.name || !this.newTask.start || !this.newTask.duration) return;
-    this.addTask(this.newTask.name, this.newTask.start, Number(this.newTask.duration));
-    this.newTask = { name: '', start: '', duration: 1 };
+    this.addTask(this.newTask.name, this.newTask.start, Number(this.newTask.duration), Number(this.newTask.progress));
+    this.newTask = { name: '', start: '', duration: 1, progress: 0 };
   }
 
+  /*********************************************************************
+   * 
+   * Renderiza el Gantt en el contenedor especificado.
+   * Limpia el contenedor antes de renderizar para evitar duplicados.
+   ********************************************************************/  
   renderGantt() {
     // Limpia el contenedor antes de renderizar para evitar duplicados
     this.ganttContainer.nativeElement.innerHTML = '';
@@ -282,12 +348,23 @@ export class FrappeganttComponent implements OnInit {
     });
   }
 
+  /*********************************************************************
+   * 
+   * Calcula la fecha de finalización a partir de la fecha de inicio 
+   * y la duración. Devuelve la fecha en formato ISO (YYYY-MM-DD).
+   ********************************************************************/
   calculateEndDate(start: string, duration: number): string {
     const date = new Date(start);
     date.setDate(date.getDate() + duration);
     return date.toISOString().split('T')[0];
   }
 
+  /*********************************************************************
+   * 
+   * Obtiene las dependencias de una tarea a partir de los enlaces.
+   * Devuelve un string con los IDs de las tareas dependientes, 
+   * separados por comas.
+   ********************************************************************/  
   getDependencies(taskId: number, links: Link[]): string {
     return links.filter(l => l.target === taskId).map(l => String(l.source)).join(',');
   }

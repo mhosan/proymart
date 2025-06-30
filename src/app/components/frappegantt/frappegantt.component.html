@@ -132,6 +132,11 @@
             <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control"
               min="1" required />
           </div>
+          <div class="mb-3">
+            <label for="taskProgress" class="form-label">Grado de avance (%)</label>
+            <input id="taskProgress" type="number" name="progress" [(ngModel)]="newTask.progress" class="form-control"
+              min="0" max="100" required />
+          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="showModal = false">Cancelar</button>
             <button type="submit" class="btn btn-primary" [disabled]="!taskForm.form.valid">Agregar tarea</button>
@@ -150,7 +155,15 @@
         <button type="button" class="btn btn-primary btn-sm" (click)="showSelectProjectModal = true">Seleccionar proyecto</button>
         <ng-container *ngIf="selectedProjectId; else noProjectSelected">
           <ng-container *ngFor="let p of proyectos">
-            <span *ngIf="p.id === selectedProjectId" class="ms-2 text-success fw-bold">{{ p.nombre }}</span>
+            <span *ngIf="p.id === selectedProjectId" class="ms-2 text-success fw-bold">
+              {{ p.nombre }}
+              <span class="ms-3 text-secondary fw-normal" style="font-size:0.95em;">
+                <ng-container *ngIf="p.start || p.end">
+                  <span *ngIf="p.start">| Inicio: {{ p.start }}</span>
+                  <span *ngIf="p.end" class="ms-2">| Fin: {{ p.end }}</span>
+                </ng-container>
+              </span>
+            </span>
           </ng-container>
         </ng-container>
         <ng-template #noProjectSelected>
@@ -162,11 +175,11 @@
         <button type="button" class="btn btn-primary btn-sm" (click)="showEditProjectModal = true" [disabled]="!selectedProjectId">Editar proyecto</button>
       </div>
     </div>
-    <div class="d-flex align-items-center mt-1 justify-content-between">
+    <div class="d-flex align-items-center mt-1 justify-content-start">
       <button type="button" class="btn btn-primary btn-sm" (click)="showModal = true" [disabled]="!selectedProjectId">
         Agregar nueva tarea
       </button>
-      <button type="button" class="btn btn-primary btn-sm" (click)="showEditTaskModal = true" [disabled]="!selectedProjectId">
+      <button type="button" class="btn btn-primary btn-sm ms-2" (click)="showEditTaskModal = true" [disabled]="!selectedProjectId">
         Editar tarea
       </button>
     </div>
@@ -204,6 +217,10 @@
           <div class="mb-3">
             <label for="editTaskDuration" class="form-label">Duración (días)</label>
             <input id="editTaskDuration" type="number" name="duration" [(ngModel)]="editTask.duration" class="form-control" min="1" required />
+          </div>
+          <div class="mb-3">
+            <label for="editTaskProgress" class="form-label">Grado de avance (%)</label>
+            <input id="editTaskProgress" type="number" name="progress" [(ngModel)]="editTask.progress" class="form-control" min="0" max="100" required />
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger me-auto" (click)="onDeleteTask()" [disabled]="!editTask.id">Eliminar tarea</button>
