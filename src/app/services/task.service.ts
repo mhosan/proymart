@@ -13,16 +13,19 @@ export class TaskService {
   // Método auxiliar para formatear fechas al formato de Gantt
   private formatDateForGantt(dateString: string | Date): string {
     if (!dateString) return "";
-
-    const date = (dateString instanceof Date) ? dateString : new Date(dateString);
-
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() es 0-indexed
-    const day = date.getDate().toString().padStart(2, '0');
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
+    // Si ya es string, devolver solo la parte YYYY-MM-DD
+    if (typeof dateString === 'string') {
+      // Si tiene espacio o T, tomar solo la parte antes
+      return dateString.split('T')[0].split(' ')[0];
+    }
+    // Si es Date, formatear a YYYY-MM-DD
+    if (dateString instanceof Date) {
+      const year = dateString.getFullYear();
+      const month = (dateString.getMonth() + 1).toString().padStart(2, '0');
+      const day = dateString.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    return '';
   }
 
   /****************************************************************************
@@ -35,6 +38,7 @@ export class TaskService {
       const transformedData: Task[] = data.map((item: any) => ({
         id: item.id,
         text: item.text,
+        // Guardar siempre solo la parte YYYY-MM-DD
         start_date: this.formatDateForGantt(item.start_date),
         duration: item.duration,
         progress: item.progress || 0,

@@ -105,32 +105,45 @@ export class FrappeganttComponent implements OnInit {
    * Abre el modal para editar la tarea seleccionada.
    * Carga los datos de la tarea en el formulario de edición.
    ***********************************************************/
-  onSelectEditTask() {
+async onSelectEditTask() {
     // Busca la tarea seleccionada y carga sus datos en el formulario
     const t = this.frappeTasks.find(task => String(task.id) === String(this.editTask.id));
     if (t) {
       this.editTask.name = t.name;
-      // Formatear la fecha de inicio a 'YYYY-MM-DD' para el input type="date"
-      if (t.start) {
-        // Mostrar exactamente el string plano de la base, sin manipulación
-        this.editTask.start = t.start;
+      // Mostrar la fecha de inicio exactamente como está en la base de datos, pero siempre en formato 'YYYY-MM-DD'
+      if (t && t.id) {
+        const originalTask = await this.taskService.get();
+        const dbTask = originalTask.find((task: any) => String(task.id) === String(t.id));
+        if (dbTask && dbTask.start_date) {
+          // Extraer solo la parte YYYY-MM-DD, aunque venga con hora o solo fecha
+          let dateStr = String(dbTask.start_date);
+          console.log(`---> Fecha original: ${dateStr}`);
+          // Si tiene 'T' o espacio, tomar solo la parte antes
+          dateStr = dateStr.split('T')[0].split(' ')[0];
+          // Validar formato YYYY-MM-DD
+          this.editTask.start = /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? dateStr : '';
+        } else {
+          this.editTask.start = '';
+        }
       } else {
         this.editTask.start = '';
       }
-      // Calcula duración a partir de start y end si existe
+      // Calcula duración a partir de start y end si existe, solo usando strings para evitar desfases de zona horaria
       if (t.start && t.end) {
-        // Calcular duración de forma inclusiva: (fecha fin - fecha inicio) / 1 día + 1
-        const startStr = t.start.split(' ')[0];
-        const endStr = t.end.split(' ')[0];
-        const startDate = new Date(startStr + 'T00:00:00Z');
-        const endDate = new Date(endStr + 'T00:00:00Z');
-        const diff = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+        // Extraer solo la parte YYYY-MM-DD
+        const startStr = String(t.start).split('T')[0].split(' ')[0];
+        const endStr = String(t.end).split('T')[0].split(' ')[0];
+        // Calcular diferencia de días de forma inclusiva
+        const [sy, sm, sd] = startStr.split('-').map(Number);
+        const [ey, em, ed] = endStr.split('-').map(Number);
+        const startUTC = Date.UTC(sy, sm - 1, sd);
+        const endUTC = Date.UTC(ey, em - 1, ed);
+        const diff = Math.max(1, Math.round((endUTC - startUTC) / (1000 * 60 * 60 * 24)) + 1);
         this.editTask.duration = diff;
       } else {
         this.editTask.duration = 1;
       }
       // Mostrar el progreso como porcentaje en el formulario de edición
-      // t.progress ya está en porcentaje (0-100) para el Gantt, así que solo redondear
       this.editTask.progress = t.progress != null ? Math.round(Number(t.progress)) : 0;
     } else {
       this.editTask.name = '';
