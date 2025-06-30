@@ -77,21 +77,21 @@
         <form (ngSubmit)="onEditProject(); showEditProjectModal = false;" #editProjectForm="ngForm">
           <div class="mb-3">
             <label for="editProyectName" class="form-label">Seleccionar proyecto</label>
-            <select id="editProyectName" class="form-select form-select-sm" [(ngModel)]="editProject.id" name="id"
+            <!-- <select id="editProyectName" class="form-select form-select-sm" [(ngModel)]="editProject.id" name="id"
               required>
               <option value="" selected>Seleccionar proyecto...</option>
               <option *ngFor="let proyecto of proyectos" [value]="proyecto.id">{{ proyecto.nombre }}</option>
-            </select>
+            </select> -->
           </div>
           <div class="mb-3">
             <label for="editNewStartingDate" class="form-label">Nueva fecha de inicio</label>
             <input id="editNewStartingDate" type="date" class="form-control form-control-sm"
-              [(ngModel)]="editProject.start" name="start" required placeholder="Nueva fecha de inicio..." />
+              [(ngModel)]="editProject.start" name="start" required />
           </div>
           <div class="mb-3">
             <label for="editEndingDate" class="form-label">Nueva fecha de fin</label>
             <input id="editEndingDate" type="date" class="form-control form-control-sm" [(ngModel)]="editProject.end"
-              name="end" required placeholder="Nueva fecha de fin..." />
+              name="end" required />
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary btn-sm"
@@ -172,7 +172,7 @@
       </div>
       <div class="d-flex align-items-center gap-2">
         <button type="button" class="btn btn-primary btn-sm" (click)="showNewProjectModal = true">Nuevo proyecto</button>
-        <button type="button" class="btn btn-primary btn-sm" (click)="showEditProjectModal = true" [disabled]="!selectedProjectId">Editar proyecto</button>
+        <button type="button" class="btn btn-primary btn-sm" (click)="onOpenEditProjectModal()" [disabled]="!selectedProjectId">Editar proyecto</button>
       </div>
     </div>
     <div class="d-flex align-items-center mt-1 justify-content-start">

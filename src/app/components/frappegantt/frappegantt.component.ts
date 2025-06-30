@@ -424,4 +424,24 @@ async onSelectEditTask() {
   getDependencies(taskId: number, links: Link[]): string {
     return links.filter(l => l.target === taskId).map(l => String(l.source)).join(',');
   }
+
+  /*********************************************************************
+   * 
+   * Abre el modal para editar el proyecto seleccionado.
+   * Precarga los datos del proyecto en el formulario de edición.
+   ********************************************************************/
+  onOpenEditProjectModal() {
+    // Buscar el proyecto seleccionado
+    const proyecto = this.proyectos.find(p => p.id === this.selectedProjectId);
+    if (proyecto) {
+      this.editProject = {
+        id: proyecto.id,
+        start: typeof proyecto.start === 'string' ? proyecto.start.split('T')[0].split(' ')[0] : '',
+        end: typeof proyecto.end === 'string' ? proyecto.end.split('T')[0].split(' ')[0] : ''
+      };
+    } else {
+      this.editProject = { id: '', start: '', end: '' };
+    }
+    this.showEditProjectModal = true;
+  }
 }
