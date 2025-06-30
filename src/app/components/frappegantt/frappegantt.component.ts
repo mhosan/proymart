@@ -30,7 +30,7 @@ export class FrappeganttComponent implements OnInit {
   showEditTaskModal = false;
   showEditProjectModal = false;
   showSelectProjectModal = false;
-  editProject = { id: '', start: '', end: '' };
+  editProject = { id: '', nombre: '', start: '', end: '' };
   selectedProjectId: string = '';
   proyectos: { id: string, nombre: string, start?: string, end?: string }[] = [];
   editTask = { id: '', name: '', start: '', duration: 1, progress: 0 };
@@ -244,13 +244,12 @@ async onSelectEditTask() {
     if (/^\d{4}-\d{2}-\d{2}/.test(this.editProject.end)) {
       formattedEnd = this.editProject.end.split('T')[0].split(' ')[0];
     }
-    // Buscar el proyecto original para obtener el nombre
+    // Buscar el proyecto original para obtener el nombre si no se editó
     const idx = this.proyectos.findIndex((p: { id: string }) => p.id === this.editProject.id);
     if (idx !== -1) {
-      const proyectoOriginal = this.proyectos[idx];
       const updatedProject = {
         id: Number(this.editProject.id),
-        name: proyectoOriginal.nombre,
+        name: this.editProject.nombre,
         start_date: formattedStart,
         end_date: formattedEnd
       };
@@ -271,7 +270,7 @@ async onSelectEditTask() {
       }
     }
     // Limpia el formulario
-    this.editProject = { id: '', start: '', end: '' };
+    this.editProject = { id: '', nombre: '', start: '', end: '' };
   }
 
   /*********************************************************************
@@ -436,11 +435,12 @@ async onSelectEditTask() {
     if (proyecto) {
       this.editProject = {
         id: proyecto.id,
+        nombre: proyecto.nombre,
         start: typeof proyecto.start === 'string' ? proyecto.start.split('T')[0].split(' ')[0] : '',
         end: typeof proyecto.end === 'string' ? proyecto.end.split('T')[0].split(' ')[0] : ''
       };
     } else {
-      this.editProject = { id: '', start: '', end: '' };
+      this.editProject = { id: '', nombre: '', start: '', end: '' };
     }
     this.showEditProjectModal = true;
   }
