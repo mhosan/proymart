@@ -70,13 +70,30 @@ export class FrappeganttComponent implements OnInit {
 
   onDeleteTask() {
     if (!this.editTask.id) return;
-    const idx = this.frappeTasks.findIndex(t => String(t.id) === String(this.editTask.id));
-    if (idx !== -1) {
-      this.frappeTasks.splice(idx, 1);
-      this.renderGantt();
-    }
-    this.editTask = { id: '', name: '', start: '', duration: 1 };
-    this.showEditTaskModal = false;
+    // Elimina la tarea de la base de datos y recarga la lista
+    this.taskService.remove(Number(this.editTask.id))
+      .then(async () => {
+        // Recargar todas las tareas del proyecto activo desde la base de datos y actualizar el Gantt
+        const tasks = await this.taskService.get();
+        const links = await this.linkService.get();
+        this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
+          id: String(task.id),
+          name: task.text,
+          start: task.start_date.split(' ')[0],
+          end: this.calculateEndDate(task.start_date, task.duration),
+          progress: Math.round((task.progress || 0) * 100),
+          dependencies: this.getDependencies(task.id, links)
+        }));
+        this.renderGantt();
+      })
+      .catch(error => {
+        console.error('Error al eliminar la tarea:', error);
+        alert('Error al eliminar la tarea. Ver consola para más detalles.');
+      })
+      .finally(() => {
+        this.editTask = { id: '', name: '', start: '', duration: 1 };
+        this.showEditTaskModal = false;
+      });
   }
   editTask = { id: '', name: '', start: '', duration: 1 };
 
@@ -103,14 +120,39 @@ export class FrappeganttComponent implements OnInit {
   }
 
   onEditTask() {
-    // Aquí deberías agregar la lógica para editar la tarea seleccionada
-    // Por ejemplo, buscar la tarea por id y actualizar sus datos
-    // const idx = this.frappeTasks.findIndex(t => t.id === this.editTask.id);
-    // if (idx !== -1) {
-    //   this.frappeTasks[idx] = { ...this.frappeTasks[idx], ...this.editTask };
-    // }
-    // Limpia el formulario
-    this.editTask = { id: '', name: '', start: '', duration: 1 };
+    // Actualizar la tarea en la base de datos y recargar la lista
+    if (!this.editTask.id) return;
+    // Construir el objeto Task para actualizar
+    const updatedTask: any = {
+      id: this.editTask.id,
+      text: this.editTask.name,
+      start_date: this.editTask.start,
+      duration: this.editTask.duration,
+      // Puedes agregar más campos si los editas
+      idProject: this.selectedProjectId // Usar el campo real de la base de datos
+    };
+    this.taskService.update(updatedTask)
+      .then(async () => {
+        // Recargar todas las tareas del proyecto activo desde la base de datos y actualizar el Gantt
+        const tasks = await this.taskService.get();
+        const links = await this.linkService.get();
+        this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
+          id: String(task.id),
+          name: task.text,
+          start: task.start_date.split(' ')[0],
+          end: this.calculateEndDate(task.start_date, task.duration),
+          progress: Math.round((task.progress || 0) * 100),
+          dependencies: this.getDependencies(task.id, links)
+        }));
+        this.renderGantt();
+      })
+      .catch(error => {
+        console.error('Error al actualizar la tarea:', error);
+        alert('Error al actualizar la tarea. Ver consola para más detalles.');
+      })
+      .finally(() => {
+        this.editTask = { id: '', name: '', start: '', duration: 1 };
+      });
   }
 
   async onSelectProject(): Promise<void> {
@@ -177,24 +219,42 @@ export class FrappeganttComponent implements OnInit {
     this.newProject = { name: '', start: '', end: '' };
   }
 
-  addTask(name: string, start: string, duration: number) {
+  async addTask(name: string, start: string, duration: number) {
     // No permitir alta de tareas si no hay proyecto activo
     if (!this.selectedProjectId) {
       alert('Debe seleccionar un proyecto activo antes de agregar tareas.');
       return;
     }
-    const newId = (Math.max(0, ...this.frappeTasks.map(t => +t.id)) + 1).toString();
-    const newTask = {
-      id: newId,
-      name,
-      start,
-      end: this.calculateEndDate(start, duration),
+    // Construir el objeto Task según el modelo esperado por TaskService
+    const newTask: any = {
+      text: name,
+      start_date: start,
+      duration: duration,
       progress: 0,
-      dependencies: '',
-      project_id: this.selectedProjectId // Asignar el proyecto activo
+      parent: 0,
+      priority: null,
+      users: [],
+      type: null,
+      project_id: this.selectedProjectId
     };
-    this.frappeTasks.push(newTask);
-    this.renderGantt();
+    try {
+      await this.taskService.insert(newTask);
+      // Recargar todas las tareas del proyecto activo desde la base de datos y actualizar el Gantt
+      const tasks = await this.taskService.get();
+      const links = await this.linkService.get();
+      this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
+        id: String(task.id),
+        name: task.text,
+        start: task.start_date.split(' ')[0],
+        end: this.calculateEndDate(task.start_date, task.duration),
+        progress: Math.round((task.progress || 0) * 100),
+        dependencies: this.getDependencies(task.id, links)
+      }));
+      this.renderGantt();
+    } catch (error) {
+      console.error('Error al guardar la tarea:', error);
+      alert('Error al guardar la tarea. Ver consola para más detalles.');
+    }
   }
 
   onSubmit() {

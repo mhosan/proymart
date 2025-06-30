@@ -109,6 +109,7 @@
 <div class="modal fade show" tabindex="-1" [ngStyle]="{display: showModal ? 'block' : 'none', 
     background: showModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
   style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1050;" *ngIf="showModal">
+
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -158,14 +159,14 @@
       </div>
       <div class="d-flex align-items-center gap-2">
         <button type="button" class="btn btn-primary btn-sm" (click)="showNewProjectModal = true">Nuevo proyecto</button>
-        <button type="button" class="btn btn-primary btn-sm" (click)="showEditProjectModal = true">Editar proyecto</button>
+        <button type="button" class="btn btn-primary btn-sm" (click)="showEditProjectModal = true" [disabled]="!selectedProjectId">Editar proyecto</button>
       </div>
     </div>
     <div class="d-flex align-items-center mt-1 justify-content-between">
-      <button type="button" class="btn btn-primary btn-sm" (click)="showModal = true">
+      <button type="button" class="btn btn-primary btn-sm" (click)="showModal = true" [disabled]="!selectedProjectId">
         Agregar nueva tarea
       </button>
-      <button type="button" class="btn btn-primary btn-sm" (click)="showEditTaskModal = true">
+      <button type="button" class="btn btn-primary btn-sm" (click)="showEditTaskModal = true" [disabled]="!selectedProjectId">
         Editar tarea
       </button>
     </div>

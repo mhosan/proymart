@@ -60,14 +60,20 @@ export class TaskService {
    ***************************************************************************/
   async insert(task: Task): Promise<Task> {
     try {
-      console.log('Objeto de tarea antes de insertar:', task);
+      console.log('Objeto de tarea antes de limpiar y mapear:', task);
       // Clonar el objeto tarea para no modificar el original
       const taskToInsert: any = { ...task };
 
       // Eliminar propiedades internas de dhtmlxGantt y 'end_date' antes de insertar
-      delete taskToInsert['!nativeeditor_status']; // Eliminar la propiedad específica
-      delete taskToInsert['!nativeeditor_id']; // Eliminar la propiedad específica (si existe)
-      delete taskToInsert['end_date']; // Eliminar la propiedad end_date
+      delete taskToInsert['!nativeeditor_status'];
+      delete taskToInsert['!nativeeditor_id'];
+      delete taskToInsert['end_date'];
+
+      // Mapear project_id a idProject para la base de datos
+      if (taskToInsert.project_id) {
+        taskToInsert.idProject = taskToInsert.project_id;
+        delete taskToInsert.project_id;
+      }
 
       // Ensure users is an array of integers
       if (taskToInsert.users !== null && taskToInsert.users !== undefined) {
@@ -82,6 +88,7 @@ export class TaskService {
         taskToInsert.users = [];
       }
 
+      console.log('Objeto de tarea FINAL que se enviará a Supabase:', taskToInsert);
       const insertedTask = await this.supabaseService.insertIntoTable('task', taskToInsert);
 
       // Después de insertar, dhtmlxGantt espera el objeto retornado con el nuevo ID asignado por la BD
@@ -89,10 +96,6 @@ export class TaskService {
       // Nos aseguramos de que el objeto retornado incluya las propiedades nativas si la inserción fue exitosa
       if (insertedTask) {
         // Copiar propiedades nativas del objeto original 'task' al objeto insertado retornado
-        // Esto es crucial para que dhtmlxGantt DataProcessor pueda actualizar su estado interno
-        // con el ID real de la base de datos.
-        // Nota: Las propiedades nativas (!...) no se envían a la BD, solo se usan para sincronizar el frontend
-        // con el backend.
         if (task.hasOwnProperty('!nativeeditor_status')) {
           (insertedTask as any)['!nativeeditor_status'] = (task as any)['!nativeeditor_status'];
         }
@@ -106,8 +109,7 @@ export class TaskService {
         }
       }
 
-      return insertedTask as Task; // Retornar el objeto insertado (con posibles propiedades nativas reañadidas)
-
+      return insertedTask as Task;
     } catch (error) {
       console.error('Error inserting task into Supabase:', error);
       HandleError(error);
