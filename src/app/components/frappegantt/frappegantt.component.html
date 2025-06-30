@@ -135,7 +135,7 @@
           <div class="mb-3">
             <label for="taskProgress" class="form-label">Grado de avance (%)</label>
             <input id="taskProgress" type="number" name="progress" [(ngModel)]="newTask.progress" class="form-control"
-              min="0" max="100" required />
+              min="0" max="100" step="1" required />
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="showModal = false">Cancelar</button>
@@ -221,6 +221,7 @@
           <div class="mb-3">
             <label for="editTaskProgress" class="form-label">Grado de avance (%)</label>
             <input id="editTaskProgress" type="number" name="progress" [(ngModel)]="editTask.progress" class="form-control" min="0" max="100" required />
+              min="0" max="100" step="1" required />
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger me-auto" (click)="onDeleteTask()" [disabled]="!editTask.id">Eliminar tarea</button>

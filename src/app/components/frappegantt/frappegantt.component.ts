@@ -54,14 +54,12 @@ export class FrappeganttComponent implements OnInit {
     if (this.selectedProjectId) {
       const tasks = await this.taskService.get();
       const links = await this.linkService.get();
-      // Filtrar tareas por el proyecto activo si existe relación
-      // Suponiendo que las tareas tienen un campo project_id
       this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
         id: String(task.id),
         name: task.text,
-        start: task.start_date.split(' ')[0],
-        end: this.calculateEndDate(task.start_date, task.duration),
-        progress: Math.round((task.progress || 0) * 100),
+        start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
+        end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
+        progress: (Number(task.progress) || 0) * 100,
         dependencies: this.getDependencies(task.id, links)
       }));
     } else {
@@ -80,15 +78,14 @@ export class FrappeganttComponent implements OnInit {
     // Elimina la tarea de la base de datos y recarga la lista
     this.taskService.remove(Number(this.editTask.id))
       .then(async () => {
-        // Recargar todas las tareas del proyecto activo desde la base de datos y actualizar el Gantt
         const tasks = await this.taskService.get();
         const links = await this.linkService.get();
         this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
           id: String(task.id),
           name: task.text,
-          start: task.start_date.split(' ')[0],
-          end: this.calculateEndDate(task.start_date, task.duration),
-          progress: Math.round((task.progress || 0) * 100),
+          start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
+          end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
+          progress: (Number(task.progress) || 0) * 100,
           dependencies: this.getDependencies(task.id, links)
         }));
         this.renderGantt();
@@ -113,17 +110,28 @@ export class FrappeganttComponent implements OnInit {
     const t = this.frappeTasks.find(task => String(task.id) === String(this.editTask.id));
     if (t) {
       this.editTask.name = t.name;
-      this.editTask.start = t.start;
+      // Formatear la fecha de inicio a 'YYYY-MM-DD' para el input type="date"
+      if (t.start) {
+        // Mostrar exactamente el string plano de la base, sin manipulación
+        this.editTask.start = t.start;
+      } else {
+        this.editTask.start = '';
+      }
       // Calcula duración a partir de start y end si existe
       if (t.start && t.end) {
-        const startDate = new Date(t.start);
-        const endDate = new Date(t.end);
-        const diff = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
+        // Calcular duración de forma inclusiva: (fecha fin - fecha inicio) / 1 día + 1
+        const startStr = t.start.split(' ')[0];
+        const endStr = t.end.split(' ')[0];
+        const startDate = new Date(startStr + 'T00:00:00Z');
+        const endDate = new Date(endStr + 'T00:00:00Z');
+        const diff = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1);
         this.editTask.duration = diff;
       } else {
         this.editTask.duration = 1;
       }
-      this.editTask.progress = t.progress ?? 0;
+      // Mostrar el progreso como porcentaje en el formulario de edición
+      // t.progress ya está en porcentaje (0-100) para el Gantt, así que solo redondear
+      this.editTask.progress = t.progress != null ? Math.round(Number(t.progress)) : 0;
     } else {
       this.editTask.name = '';
       this.editTask.start = '';
@@ -139,27 +147,29 @@ export class FrappeganttComponent implements OnInit {
   onEditTask() {
     // Actualizar la tarea en la base de datos y recargar la lista
     if (!this.editTask.id) return;
-    // Construir el objeto Task para actualizar
+    // Evitar desfase de fechas: parsear manualmente la fecha (YYYY-MM-DD)
+    let formattedStart = this.editTask.start;
+    if (/^\d{4}-\d{2}-\d{2}/.test(this.editTask.start)) {
+      formattedStart = this.editTask.start.split('T')[0].split(' ')[0];
+    }
     const updatedTask: any = {
       id: this.editTask.id,
       text: this.editTask.name,
-      start_date: this.editTask.start,
+      start_date: formattedStart,
       duration: this.editTask.duration,
-      // Guardar el progreso como decimal (0-1)
       progress: Number(this.editTask.progress) / 100,
-      idProject: this.selectedProjectId // Usar el campo real de la base de datos
+      idProject: this.selectedProjectId
     };
     this.taskService.update(updatedTask)
       .then(async () => {
-        // Recargar todas las tareas del proyecto activo desde la base de datos y actualizar el Gantt
         const tasks = await this.taskService.get();
         const links = await this.linkService.get();
         this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
           id: String(task.id),
           name: task.text,
-          start: task.start_date.split(' ')[0],
-          end: this.calculateEndDate(task.start_date, task.duration),
-          progress: Math.round((task.progress || 0) * 100),
+          start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
+          end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
+          progress: (Number(task.progress) || 0) * 100,
           dependencies: this.getDependencies(task.id, links)
         }));
         this.renderGantt();
@@ -193,9 +203,9 @@ export class FrappeganttComponent implements OnInit {
       this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
         id: String(task.id),
         name: task.text,
-        start: task.start_date.split(' ')[0],
-        end: this.calculateEndDate(task.start_date, task.duration),
-        progress: Math.round((task.progress || 0) * 100),
+        start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
+        end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
+        progress: (Number(task.progress) || 0) * 100,
         dependencies: this.getDependencies(task.id, links)
       }));
     } catch (error) {
@@ -212,6 +222,15 @@ export class FrappeganttComponent implements OnInit {
    ********************************************************************/  
   async onEditProject() {
     if (!this.editProject.id || !this.editProject.start || !this.editProject.end) return;
+    // Guardar siempre en formato 'YYYY-MM-DD' puro (sin hora)
+    let formattedStart = this.editProject.start;
+    let formattedEnd = this.editProject.end;
+    if (/^\d{4}-\d{2}-\d{2}/.test(this.editProject.start)) {
+      formattedStart = this.editProject.start.split('T')[0].split(' ')[0];
+    }
+    if (/^\d{4}-\d{2}-\d{2}/.test(this.editProject.end)) {
+      formattedEnd = this.editProject.end.split('T')[0].split(' ')[0];
+    }
     // Buscar el proyecto original para obtener el nombre
     const idx = this.proyectos.findIndex((p: { id: string }) => p.id === this.editProject.id);
     if (idx !== -1) {
@@ -219,8 +238,8 @@ export class FrappeganttComponent implements OnInit {
       const updatedProject = {
         id: Number(this.editProject.id),
         name: proyectoOriginal.nombre,
-        start_date: this.editProject.start,
-        end_date: this.editProject.end
+        start_date: formattedStart,
+        end_date: formattedEnd
       };
       try {
         const saved = await this.projectService.update(updatedProject);
@@ -251,10 +270,19 @@ export class FrappeganttComponent implements OnInit {
   ********************************************************************/
   async onCreateProject() {
     if (!this.newProject.name || !this.newProject.start || !this.newProject.end) return;
+    // Guardar siempre en formato 'YYYY-MM-DD' puro (sin hora)
+    let formattedStart = this.newProject.start;
+    let formattedEnd = this.newProject.end;
+    if (/^\d{4}-\d{2}-\d{2}/.test(this.newProject.start)) {
+      formattedStart = this.newProject.start.split('T')[0].split(' ')[0];
+    }
+    if (/^\d{4}-\d{2}-\d{2}/.test(this.newProject.end)) {
+      formattedEnd = this.newProject.end.split('T')[0].split(' ')[0];
+    }
     const project: Project = {
       name: this.newProject.name,
-      start_date: this.newProject.start,
-      end_date: this.newProject.end
+      start_date: formattedStart,
+      end_date: formattedEnd
     };
     try {
       const saved = await this.projectService.insert(project);
@@ -279,10 +307,17 @@ export class FrappeganttComponent implements OnInit {
       alert('Debe seleccionar un proyecto activo antes de agregar tareas.');
       return;
     }
-    // Construir el objeto Task según el modelo esperado por TaskService
+    // Evitar desfase de fechas: parsear manualmente la fecha (YYYY-MM-DD)
+    // y no usar new Date() para formatear
+    // Si el input es YYYY-MM-DD, simplemente agregar la hora fija
+    // Guardar siempre en formato 'YYYY-MM-DD' puro (sin hora)
+    let formattedStart = start;
+    if (/^\d{4}-\d{2}-\d{2}/.test(start)) {
+      formattedStart = start.split('T')[0].split(' ')[0];
+    }
     const newTask: any = {
       text: name,
-      start_date: start,
+      start_date: formattedStart,
       duration: duration,
       // Guardar el progreso como decimal (0-1)
       progress: Number(progress) / 100,
@@ -300,9 +335,9 @@ export class FrappeganttComponent implements OnInit {
       this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
         id: String(task.id),
         name: task.text,
-        start: task.start_date.split(' ')[0],
-        end: this.calculateEndDate(task.start_date, task.duration),
-        progress: Math.round((task.progress || 0) * 100),
+        start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
+        end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
+        progress: (Number(task.progress) || 0) * 100,
         dependencies: this.getDependencies(task.id, links)
       }));
       this.renderGantt();
@@ -354,9 +389,17 @@ export class FrappeganttComponent implements OnInit {
    * y la duración. Devuelve la fecha en formato ISO (YYYY-MM-DD).
    ********************************************************************/
   calculateEndDate(start: string, duration: number): string {
-    const date = new Date(start);
-    date.setDate(date.getDate() + duration);
-    return date.toISOString().split('T')[0];
+    // Calcular la fecha de fin solo usando strings (YYYY-MM-DD) y sin objetos Date
+    // start: 'YYYY-MM-DD', duration: número de días
+    if (!start || !/^\d{4}-\d{2}-\d{2}/.test(start) || !duration) return '';
+    const [year, month, day] = start.split('-').map(Number);
+    const startDate = new Date(Date.UTC(year, month - 1, day));
+    startDate.setUTCDate(startDate.getUTCDate() + Number(duration) - 1); // -1 para que duración 1 sea mismo día
+    // Formatear a 'YYYY-MM-DD' puro
+    const yyyy = startDate.getUTCFullYear();
+    const mm = String(startDate.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(startDate.getUTCDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
   }
 
   /*********************************************************************
