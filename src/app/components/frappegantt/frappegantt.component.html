@@ -38,6 +38,9 @@
 </div>
 
 <div class="gantt-container">
+  <div #frappe_gantt_here class="gantt-chart"></div>
+</div>
+
 <!-- Modal para editar tarea -->
 <div class="modal fade show" tabindex="-1"
   [ngStyle]="{display: showEditTaskModal ? 'block' : 'none', background: showEditTaskModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
@@ -74,6 +77,13 @@
             <input id="editTaskProgress" type="number" name="progress" [(ngModel)]="editTask.progress" class="form-control" min="0" max="100" required />
               min="0" max="100" step="1" required />
           </div>
+          <div class="mb-3">
+            <label for="editTaskResponsible" class="form-label">Responsable</label>
+            <select id="editTaskResponsible" class="form-select" [(ngModel)]="editTask.responsible" name="responsible">
+              <option value="" disabled selected>Seleccionar responsable...</option>
+              <option *ngFor="let responsible of responsibles" [value]="responsible">{{ responsible }}</option>
+            </select>
+          </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger me-auto" (click)="onDeleteTask()" [disabled]="!editTask.id">Eliminar tarea</button>
             <button type="button" class="btn btn-secondary" (click)="showEditTaskModal = false">Cancelar</button>
@@ -84,9 +94,61 @@
     </div>
   </div>
 </div>
-  <div #frappe_gantt_here class="gantt-chart"></div>
-</div>
 
+<!-- Modal para agregar tarea -->
+<div class="modal fade show" tabindex="-1" [ngStyle]="{display: showModal ? 'block' : 'none', 
+    background: showModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
+  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1050;" *ngIf="showModal">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Agregar nueva tarea</h5>
+        <button type="button" class="btn-close" (click)="showModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <form class="gantt-form" (ngSubmit)="onSubmit(); showModal = false;" #taskForm="ngForm">
+          
+          <div class="mb-3">
+            <label for="taskName" class="form-label">Nombre de la tarea</label>
+            <input id="taskName" type="text" name="name" [(ngModel)]="newTask.name" class="form-control"
+              placeholder="Nombre de la tarea" required />
+          </div>
+          
+          <div class="mb-3">
+            <label for="taskStart" class="form-label">Fecha de inicio</label>
+            <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start" class="form-control" required />
+          </div>
+          
+          <div class="mb-3">
+            <label for="taskDuration" class="form-label">Duración (días)</label>
+            <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control"
+              min="1" required />
+          </div>
+          
+          <div class="mb-3">
+            <label for="taskProgress" class="form-label">Grado de avance (%)</label>
+            <input id="taskProgress" type="number" name="progress" [(ngModel)]="newTask.progress" class="form-control"
+              min="0" max="100" step="1" required />
+          </div>
+          
+          <div class="mb-3">
+            <label for="taskResponsible" class="form-label">Responsable</label>
+            <select id="taskResponsible" class="form-select" [(ngModel)]="newTask.responsible" name="responsible">
+              <option value="" disabled selected>Seleccionar responsable...</option>
+              <option *ngFor="let responsible of responsibles" [value]="responsible">{{ responsible }}</option>
+            </select>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="showModal = false">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="!taskForm.form.valid">Agregar tarea</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal para alta de nuevo proyecto -->
 <div class="modal fade show" tabindex="-1"
@@ -191,47 +253,7 @@
   </div>
 </div>
 
-<!-- Modal para agregar tarea -->
-<div class="modal fade show" tabindex="-1" [ngStyle]="{display: showModal ? 'block' : 'none', 
-    background: showModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
-  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1050;" *ngIf="showModal">
 
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Agregar nueva tarea</h5>
-        <button type="button" class="btn-close" (click)="showModal = false"></button>
-      </div>
-      <div class="modal-body">
-        <form class="gantt-form" (ngSubmit)="onSubmit(); showModal = false;" #taskForm="ngForm">
-          <div class="mb-3">
-            <label for="taskName" class="form-label">Nombre de la tarea</label>
-            <input id="taskName" type="text" name="name" [(ngModel)]="newTask.name" class="form-control"
-              placeholder="Nombre de la tarea" required />
-          </div>
-          <div class="mb-3">
-            <label for="taskStart" class="form-label">Fecha de inicio</label>
-            <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start" class="form-control" required />
-          </div>
-          <div class="mb-3">
-            <label for="taskDuration" class="form-label">Duración (días)</label>
-            <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control"
-              min="1" required />
-          </div>
-          <div class="mb-3">
-            <label for="taskProgress" class="form-label">Grado de avance (%)</label>
-            <input id="taskProgress" type="number" name="progress" [(ngModel)]="newTask.progress" class="form-control"
-              min="0" max="100" step="1" required />
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="showModal = false">Cancelar</button>
-            <button type="submit" class="btn btn-primary" [disabled]="!taskForm.form.valid">Agregar tarea</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 
 
 

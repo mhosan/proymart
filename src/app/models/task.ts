@@ -9,4 +9,5 @@ export class Task {
     users?: number[];
     type?: string;
     project_id?: number | string;
+    responsible?: string; // Added responsible field
 }
