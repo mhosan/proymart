@@ -41,17 +41,23 @@
         Editar tarea
       </button>
       <!-- Seleccionar el tipo de visualización -->
-      <button type="button" class="btn btn-primary btn-sm ms-2" [disabled]="!selectedProjectId" (click)="tiempoUnidades = 'Day'; setTimeGantt()">
+      <button type="button" class="btn btn-primary btn-sm ms-2" [disabled]="!selectedProjectId"
+        (click)="tiempoUnidades = 'Day'; setTimeGantt()">
         Días
       </button>
-      <button type="button" class="btn btn-primary btn-sm ms-2" [disabled]="!selectedProjectId" (click)="tiempoUnidades = 'Week'; setTimeGantt()">
+      <button type="button" class="btn btn-primary btn-sm ms-2" [disabled]="!selectedProjectId"
+        (click)="tiempoUnidades = 'Week'; setTimeGantt()">
         Semanas
       </button>
-      <button type="button" class="btn btn-primary btn-sm ms-2"  [disabled]="!selectedProjectId" (click)="tiempoUnidades = 'Month'; setTimeGantt()">
+      <button type="button" class="btn btn-primary btn-sm ms-2" [disabled]="!selectedProjectId"
+        (click)="tiempoUnidades = 'Month'; setTimeGantt()">
         Meses
       </button>
-
+      <button type="button" class="btn btn-primary btn-sm ms-2" [disabled]="!selectedProjectId" (click)="setToday()">
+        Hoy
+      </button>
     </div>
+
 
   </div>
 </div>

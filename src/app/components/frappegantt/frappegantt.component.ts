@@ -14,6 +14,11 @@ import { Link } from '../../models/link'; // Import the Link type
  */
 type ViewModeType = 'Day' | 'Week' | 'Month' | 'Year';
 
+// Definir un tipo personalizado para las tareas de Frappe Gantt que incluya la propiedad 'responsible'
+interface FrappeTask extends Gantt.Task {
+  responsible?: string;
+}
+
 @Component({
   selector: 'app-frappegantt',
   standalone: true,
@@ -26,9 +31,8 @@ type ViewModeType = 'Day' | 'Week' | 'Month' | 'Year';
 export class FrappeganttComponent implements OnInit {
   @ViewChild('frappe_gantt_here', { static: true }) ganttContainer!: ElementRef;
 
-  gantt: any;
-  frappeTasks: any[] = [];
-  // Ahora responsible es id (number|null)
+  gantt!: Gantt;
+  frappeTasks: FrappeTask[] = [];
   newTask = { name: '', start: '', duration: 1, progress: 0, responsible: null as number | null };
   showNewProjectModal = false;
   newProject = { name: '', start: '', end: '' };
@@ -36,12 +40,14 @@ export class FrappeganttComponent implements OnInit {
   showEditTaskModal = false;
   showEditProjectModal = false;
   showSelectProjectModal = false;
-  editProject = { id: '', nombre: '', start: '', end: ''};
+  editProject = { id: '', nombre: '', start: '', end: '' };
   selectedProjectId: string = '';
   proyectos: { id: string, nombre: string, start?: string, end?: string }[] = [];
   editTask = { id: '', name: '', start: '', duration: 1, progress: 0, responsible: null as number | null };
   responsibles: { id: number, nombre: string, apellido: string, email: string, telefono: string }[] = [];
   tiempoUnidades: ViewModeType = 'Month'; // Change the type to ViewModeType
+  today_button = false;
+
 
   constructor(
     private taskService: TaskService,
@@ -86,14 +92,14 @@ export class FrappeganttComponent implements OnInit {
    * 
    * Renderiza el Gantt en el contenedor especificado.
    * Limpia el contenedor antes de renderizar para evitar duplicados.
-   ********************************************************************/  
+   ********************************************************************/
   renderGantt() {
     // Limpia el contenedor antes de renderizar para evitar duplicados
     this.ganttContainer.nativeElement.innerHTML = '';
     this.gantt = new Gantt(this.ganttContainer.nativeElement, this.frappeTasks, {
       view_mode: this.tiempoUnidades,
       language: 'es',
-      on_click: (task: any) => {
+      on_click: (task: FrappeTask) => {
         // No hacer nada en click simple
       },
       on_date_change: () => { },
@@ -102,8 +108,19 @@ export class FrappeganttComponent implements OnInit {
     });
   }
 
+  /**************************************************************
+   * setear unidades de tiempo del gantt en dias, semanas o meses
+   *************************************************************/
   setTimeGantt() {
     this.renderGantt();
+  }
+
+  setToday() {
+    console.log('Botón "Hoy" pulsado');
+    if (this.gantt) {
+      console.log('Objeto Gantt:', this.gantt);
+      (this.gantt as any).scroll_current();
+    }
   }
 
 
@@ -147,7 +164,7 @@ export class FrappeganttComponent implements OnInit {
    * Abre el modal para editar la tarea seleccionada.
    * Carga los datos de la tarea en el formulario de edición.
    ***********************************************************/
-async onSelectEditTask() {
+  async onSelectEditTask() {
     // Busca la tarea seleccionada y carga sus datos en el formulario
     const t = this.frappeTasks.find(task => String(task.id) === String(this.editTask.id));
     if (t) {
@@ -246,7 +263,7 @@ async onSelectEditTask() {
    * 
    * Abre el modal para seleccionar un proyecto.
    * Si no hay proyectos, muestra un mensaje.
-   ********************************************************************/  
+   ********************************************************************/
   async onSelectProject(): Promise<void> {
     // Si no hay proyecto seleccionado, limpiar selección y tareas
     if (!this.selectedProjectId) {
@@ -278,7 +295,7 @@ async onSelectEditTask() {
    * 
    * Abre el modal para crear un nuevo proyecto.
    * Limpia el formulario de creación de proyecto.
-   ********************************************************************/  
+   ********************************************************************/
   async onEditProject() {
     if (!this.editProject.id || !this.editProject.start || !this.editProject.end) return;
     // Guardar siempre en formato 'YYYY-MM-DD' puro (sin hora)
@@ -316,7 +333,7 @@ async onSelectEditTask() {
       }
     }
     // Limpia el formulario
-    this.editProject = { id: '', nombre: '', start: '', end: ''};
+    this.editProject = { id: '', nombre: '', start: '', end: '' };
   }
 
   /*********************************************************************
@@ -358,7 +375,7 @@ async onSelectEditTask() {
    * 
    * Agrega una nueva tarea al proyecto activo.
    * Si no hay proyecto activo, muestra un mensaje de alerta.
-   ********************************************************************/  
+   ********************************************************************/
   async addTask(name: string, start: string, duration: number, progress: number) {
     // No permitir alta de tareas si no hay proyecto activo
     if (!this.selectedProjectId) {
@@ -413,7 +430,7 @@ async onSelectEditTask() {
    * Maneja el envío del formulario para agregar una nueva tarea.
    * Valida que haya un proyecto activo y que los campos de la tarea
    * estén completos.
-   ********************************************************************/  
+   ********************************************************************/
   onSubmit() {
     if (!this.selectedProjectId) {
       alert('Debe seleccionar un proyecto activo antes de agregar tareas.');
@@ -429,7 +446,7 @@ async onSelectEditTask() {
     this.newTask = { name: '', start: '', duration: 1, progress: 0, responsible: null };
   }
 
-  
+
   /*********************************************************************
    * 
    * Calcula la fecha de finalización a partir de la fecha de inicio 
@@ -454,7 +471,7 @@ async onSelectEditTask() {
    * Obtiene las dependencias de una tarea a partir de los enlaces.
    * Devuelve un string con los IDs de las tareas dependientes, 
    * separados por comas.
-   ********************************************************************/  
+   ********************************************************************/
   getDependencies(taskId: number, links: Link[]): string {
     return links.filter(l => l.target === taskId).map(l => String(l.source)).join(',');
   }
