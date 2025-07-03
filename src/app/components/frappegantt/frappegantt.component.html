@@ -1,9 +1,10 @@
 <!-- Row con los tres botones: seleccionar, alta y edición de proyecto -->
 <div class="row my-5" style="max-width: 100vw; margin-left: auto; margin-right: auto;">
-  <div class="col d-flex flex-column gap-1 toolbarMh" >
+  <div class="col d-flex flex-column gap-1 toolbarMh">
     <div class="d-flex align-items-center gap-2 justify-content-between">
       <div class="d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-primary btn-sm" (click)="showSelectProjectModal = true">Seleccionar proyecto</button>
+        <button type="button" class="btn btn-primary btn-sm" (click)="showSelectProjectModal = true">Seleccionar
+          proyecto</button>
         <ng-container *ngIf="selectedProjectId; else noProjectSelected">
           <ng-container *ngFor="let p of proyectos">
             <span *ngIf="p.id === selectedProjectId" class="ms-2 text-success fw-bold">
@@ -21,76 +22,37 @@
           <span class="ms-2 text-danger fw-bold">No hay proyecto activo seleccionado</span>
         </ng-template>
       </div>
+
       <div class="d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-primary btn-sm" (click)="showNewProjectModal = true">Nuevo proyecto</button>
-        <button type="button" class="btn btn-primary btn-sm" (click)="onOpenEditProjectModal()" [disabled]="!selectedProjectId">Editar proyecto</button>
+        <button type="button" class="btn btn-primary btn-sm" (click)="showNewProjectModal = true">Nuevo
+          proyecto</button>
+        <button type="button" class="btn btn-primary btn-sm" (click)="onOpenEditProjectModal()"
+          [disabled]="!selectedProjectId">Editar proyecto</button>
       </div>
+
     </div>
+
     <div class="d-flex align-items-center mt-1 justify-content-start">
       <button type="button" class="btn btn-primary btn-sm" (click)="showModal = true" [disabled]="!selectedProjectId">
         Agregar nueva tarea
       </button>
-      <button type="button" class="btn btn-primary btn-sm ms-2" (click)="showEditTaskModal = true" [disabled]="!selectedProjectId">
+      <button type="button" class="btn btn-primary btn-sm ms-2" (click)="showEditTaskModal = true"
+        [disabled]="!selectedProjectId">
         Editar tarea
       </button>
-    </div>
-  </div>
-</div>
+      <!-- Seleccionar el tipo de visualización -->
+      <button type="button" class="btn btn-primary btn-sm ms-2" [disabled]="!selectedProjectId" (click)="tiempoUnidades = 'Day'; setTimeGantt()">
+        Días
+      </button>
+      <button type="button" class="btn btn-primary btn-sm ms-2" [disabled]="!selectedProjectId" (click)="tiempoUnidades = 'Week'; setTimeGantt()">
+        Semanas
+      </button>
+      <button type="button" class="btn btn-primary btn-sm ms-2"  [disabled]="!selectedProjectId" (click)="tiempoUnidades = 'Month'; setTimeGantt()">
+        Meses
+      </button>
 
-<div class="gantt-container">
-  <div #frappe_gantt_here class="gantt-chart"></div>
-</div>
-
-<!-- Modal para editar tarea -->
-<div class="modal fade show" tabindex="-1"
-  [ngStyle]="{display: showEditTaskModal ? 'block' : 'none', background: showEditTaskModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
-  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1060;" *ngIf="showEditTaskModal">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Editar tarea</h5>
-        <button type="button" class="btn-close" (click)="showEditTaskModal = false"></button>
-      </div>
-      <div class="modal-body">
-        <form class="gantt-form" (ngSubmit)="onEditTask(); showEditTaskModal = false;" #editTaskForm="ngForm">
-          <div class="mb-3">
-            <label for="selectEditTask" class="form-label">Seleccionar tarea</label>
-            <select id="selectEditTask" class="form-select form-select-sm" [(ngModel)]="editTask.id" name="id" required (change)="onSelectEditTask()">
-              <option value="" disabled selected>Seleccionar tarea...</option>
-              <option *ngFor="let t of frappeTasks" [value]="t.id">{{ t.name }}</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="editTaskName" class="form-label">Nombre de la tarea</label>
-            <input id="editTaskName" type="text" name="name" [(ngModel)]="editTask.name" class="form-control form-control-sm" required />
-          </div>
-          <div class="mb-3">
-            <label for="editTaskStart" class="form-label">Fecha de inicio</label>
-            <input id="editTaskStart" type="date" name="start" [(ngModel)]="editTask.start" class="form-control form-control-sm" required />
-          </div>
-          <div class="mb-3">
-            <label for="editTaskDuration" class="form-label">Duración (días)</label>
-            <input id="editTaskDuration" type="number" name="duration" [(ngModel)]="editTask.duration" class="form-control form-control-sm" min="1" required />
-          </div>
-          <div class="mb-3">
-            <label for="editTaskProgress" class="form-label">Grado de avance (%)</label>
-            <input id="editTaskProgress" type="number" name="progress" [(ngModel)]="editTask.progress" class="form-control form-control-sm" min="0" max="100" required />
-          </div>
-          <div class="mb-3">
-            <label for="editTaskResponsible" class="form-label">Responsable</label>
-            <select id="editTaskResponsible" class="form-select form-select-sm" [(ngModel)]="editTask.responsible" name="responsible">
-              <option value="" disabled selected>Seleccionar responsable...</option>
-              <option *ngFor="let responsible of responsibles" [value]="responsible.id">{{ responsible.nombre }} {{ responsible.apellido }}</option>
-            </select>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger me-auto" (click)="onDeleteTask()" [disabled]="!editTask.id">Eliminar tarea</button>
-            <button type="button" class="btn btn-secondary" (click)="showEditTaskModal = false">Cancelar</button>
-            <button type="submit" class="btn btn-primary" [disabled]="!editTaskForm.form.valid">Guardar cambios</button>
-          </div>
-        </form>
-      </div>
     </div>
+
   </div>
 </div>
 
@@ -107,38 +69,41 @@
       </div>
       <div class="modal-body">
         <form class="gantt-form" (ngSubmit)="onSubmit(); showModal = false;" #taskForm="ngForm">
-          
+
           <div class="mb-3">
             <label for="taskName" class="form-label">Nombre de la tarea</label>
             <input id="taskName" type="text" name="name" [(ngModel)]="newTask.name" class="form-control form-control-sm"
               placeholder="Nombre de la tarea" required />
           </div>
-          
+
           <div class="mb-3">
             <label for="taskStart" class="form-label">Fecha de inicio</label>
-            <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start" class="form-control form-control-sm" required />
+            <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start"
+              class="form-control form-control-sm" required />
           </div>
-          
+
           <div class="mb-3">
             <label for="taskDuration" class="form-label">Duración (días)</label>
-            <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control form-control-sm"
-              min="1" required />
+            <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration"
+              class="form-control form-control-sm" min="1" required />
           </div>
-          
+
           <div class="mb-3">
             <label for="taskProgress" class="form-label">Grado de avance (%)</label>
-            <input id="taskProgress" type="number" name="progress" [(ngModel)]="newTask.progress" class="form-control form-control-sm"
-              min="0" max="100" step="1" required />
+            <input id="taskProgress" type="number" name="progress" [(ngModel)]="newTask.progress"
+              class="form-control form-control-sm" min="0" max="100" step="1" required />
           </div>
-          
+
           <div class="mb-3">
             <label for="taskResponsible" class="form-label">Responsable</label>
-            <select id="taskResponsible" class="form-select form-select-sm" [(ngModel)]="newTask.responsible" name="responsible">
+            <select id="taskResponsible" class="form-select form-select-sm" [(ngModel)]="newTask.responsible"
+              name="responsible">
               <option value="" disabled selected>Seleccionar responsable...</option>
-              <option *ngFor="let responsible of responsibles" [value]="responsible.id">{{ responsible.nombre }} {{ responsible.apellido }}</option>
+              <option *ngFor="let responsible of responsibles" [value]="responsible.id">{{ responsible.nombre }} {{
+                responsible.apellido }}</option>
             </select>
           </div>
-          
+
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="showModal = false">Cancelar</button>
             <button type="submit" class="btn btn-primary" [disabled]="!taskForm.form.valid">Agregar tarea</button>
@@ -148,6 +113,73 @@
     </div>
   </div>
 </div>
+
+<!-- Modal para editar tarea -->
+<div class="modal fade show" tabindex="-1"
+  [ngStyle]="{display: showEditTaskModal ? 'block' : 'none', background: showEditTaskModal ? 'rgba(0,0,0,0.5)' : 'transparent'}"
+  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1060;" *ngIf="showEditTaskModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar tarea</h5>
+        <button type="button" class="btn-close" (click)="showEditTaskModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <form class="gantt-form" (ngSubmit)="onEditTask(); showEditTaskModal = false;" #editTaskForm="ngForm">
+          <div class="mb-3">
+            <label for="selectEditTask" class="form-label">Seleccionar tarea</label>
+            <select id="selectEditTask" class="form-select form-select-sm" [(ngModel)]="editTask.id" name="id" required
+              (change)="onSelectEditTask()">
+              <option value="" disabled selected>Seleccionar tarea...</option>
+              <option *ngFor="let t of frappeTasks" [value]="t.id">{{ t.name }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="editTaskName" class="form-label">Nombre de la tarea</label>
+            <input id="editTaskName" type="text" name="name" [(ngModel)]="editTask.name"
+              class="form-control form-control-sm" required />
+          </div>
+          <div class="mb-3">
+            <label for="editTaskStart" class="form-label">Fecha de inicio</label>
+            <input id="editTaskStart" type="date" name="start" [(ngModel)]="editTask.start"
+              class="form-control form-control-sm" required />
+          </div>
+          <div class="mb-3">
+            <label for="editTaskDuration" class="form-label">Duración (días)</label>
+            <input id="editTaskDuration" type="number" name="duration" [(ngModel)]="editTask.duration"
+              class="form-control form-control-sm" min="1" required />
+          </div>
+          <div class="mb-3">
+            <label for="editTaskProgress" class="form-label">Grado de avance (%)</label>
+            <input id="editTaskProgress" type="number" name="progress" [(ngModel)]="editTask.progress"
+              class="form-control form-control-sm" min="0" max="100" required />
+          </div>
+          <div class="mb-3">
+            <label for="editTaskResponsible" class="form-label">Responsable</label>
+            <select id="editTaskResponsible" class="form-select form-select-sm" [(ngModel)]="editTask.responsible"
+              name="responsible">
+              <option value="" disabled selected>Seleccionar responsable...</option>
+              <option *ngFor="let responsible of responsibles" [value]="responsible.id">{{ responsible.nombre }} {{
+                responsible.apellido }}</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger me-auto" (click)="onDeleteTask()"
+              [disabled]="!editTask.id">Eliminar tarea</button>
+            <button type="button" class="btn btn-secondary" (click)="showEditTaskModal = false">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="!editTaskForm.form.valid">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="gantt-container">
+  <div #frappe_gantt_here class="gantt-chart"></div>
+</div>
+
 
 <!-- Modal para alta de nuevo proyecto -->
 <div class="modal fade show" tabindex="-1"
@@ -166,7 +198,7 @@
             <input id="proyectName" type="text" class="form-control form-control-sm" [(ngModel)]="newProject.name"
               name="name" required placeholder="Nuevo proyecto..." />
           </div>
-          <div class="mb-3"> 
+          <div class="mb-3">
             <label for="startingDate" class="form-label">Fecha de inicio</label>
             <input id="startingDate" type="date" class="form-control form-control-sm" [(ngModel)]="newProject.start"
               name="start" required placeholder="Fecha de inicio..." />
@@ -228,7 +260,8 @@
         <form (ngSubmit)="onEditProject(); showEditProjectModal = false;" #editProjectForm="ngForm">
           <div class="mb-3">
             <label for="editProjectName" class="form-label">Nombre del proyecto</label>
-            <input id="editProjectName" type="text" class="form-control form-control-sm" [(ngModel)]="editProject.nombre" name="nombre" required placeholder="Nombre del proyecto..." />
+            <input id="editProjectName" type="text" class="form-control form-control-sm"
+              [(ngModel)]="editProject.nombre" name="nombre" required placeholder="Nombre del proyecto..." />
           </div>
           <div class="mb-3">
             <label for="editNewStartingDate" class="form-label">Nueva fecha de inicio</label>
@@ -251,8 +284,3 @@
     </div>
   </div>
 </div>
-
-
-
-
-

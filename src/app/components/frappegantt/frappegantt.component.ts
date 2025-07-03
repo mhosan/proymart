@@ -1,14 +1,18 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { TaskService } from '../../services/task.service';
-import { ResponsibleService } from '../../services/responsible.service';
+import { ResponsibleService } from '../../services/responsible.service'; // Importar ResponsibleService
 import { LinkService } from '../../services/link.service';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/project';
-import { Task } from '../../models/task';
-import { Link } from '../../models/link';
 import Gantt from 'frappe-gantt';
 import { FormsModule } from '@angular/forms';
-import { NgIf, NgStyle, NgFor } from '@angular/common'; 
+import { NgIf, NgStyle, NgFor } from '@angular/common';
+import { Link } from '../../models/link'; // Import the Link type
+
+/**
+ * Definir un tipo para la visualización del Gantt
+ */
+type ViewModeType = 'Day' | 'Week' | 'Month' | 'Year';
 
 @Component({
   selector: 'app-frappegantt',
@@ -36,21 +40,8 @@ export class FrappeganttComponent implements OnInit {
   selectedProjectId: string = '';
   proyectos: { id: string, nombre: string, start?: string, end?: string }[] = [];
   editTask = { id: '', name: '', start: '', duration: 1, progress: 0, responsible: null as number | null };
-  responsibles: { id: number, nombre: string, apellido?: string, email?: string, telefono?: string }[] = [];
-  responsibleMap: { [key: string]: number } = {
-    'Usuario 1': 1,
-    'Usuario 2': 2,
-    'Usuario 3': 3,
-    'Responsable A': 4,
-    'Responsable B': 5
-  };
-  responsibleReverseMap: { [key: number]: string } = {
-    1: 'Usuario 1',
-    2: 'Usuario 2',
-    3: 'Usuario 3',
-    4: 'Responsable A',
-    5: 'Responsable B'
-  };
+  responsibles: { id: number, nombre: string, apellido: string, email: string, telefono: string }[] = [];
+  tiempoUnidades: ViewModeType = 'Month'; // Change the type to ViewModeType
 
   constructor(
     private taskService: TaskService,
@@ -90,6 +81,31 @@ export class FrappeganttComponent implements OnInit {
     }
     this.renderGantt();
   }
+
+  /*********************************************************************
+   * 
+   * Renderiza el Gantt en el contenedor especificado.
+   * Limpia el contenedor antes de renderizar para evitar duplicados.
+   ********************************************************************/  
+  renderGantt() {
+    // Limpia el contenedor antes de renderizar para evitar duplicados
+    this.ganttContainer.nativeElement.innerHTML = '';
+    this.gantt = new Gantt(this.ganttContainer.nativeElement, this.frappeTasks, {
+      view_mode: this.tiempoUnidades,
+      language: 'es',
+      on_click: (task: any) => {
+        // No hacer nada en click simple
+      },
+      on_date_change: () => { },
+      on_progress_change: () => { },
+      on_view_change: () => { }
+    });
+  }
+
+  setTimeGantt() {
+    this.renderGantt();
+  }
+
 
   /************************************************************
    * 
@@ -178,6 +194,7 @@ async onSelectEditTask() {
       this.editTask.responsible = null;
     }
   }
+
   /************************************************************************
    * 
    * Actualiza la tarea seleccionada en la base de datos y recarga el Gantt.
@@ -412,26 +429,7 @@ async onSelectEditTask() {
     this.newTask = { name: '', start: '', duration: 1, progress: 0, responsible: null };
   }
 
-  /*********************************************************************
-   * 
-   * Renderiza el Gantt en el contenedor especificado.
-   * Limpia el contenedor antes de renderizar para evitar duplicados.
-   ********************************************************************/  
-  renderGantt() {
-    // Limpia el contenedor antes de renderizar para evitar duplicados
-    this.ganttContainer.nativeElement.innerHTML = '';
-    this.gantt = new Gantt(this.ganttContainer.nativeElement, this.frappeTasks, {
-      view_mode: 'Day',
-      language: 'es',
-      on_click: (task: any) => {
-        // No hacer nada en click simple
-      },
-      on_date_change: () => { },
-      on_progress_change: () => { },
-      on_view_change: () => { }
-    });
-  }
-
+  
   /*********************************************************************
    * 
    * Calcula la fecha de finalización a partir de la fecha de inicio 
