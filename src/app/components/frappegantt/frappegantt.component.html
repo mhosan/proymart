@@ -55,31 +55,30 @@
         <form class="gantt-form" (ngSubmit)="onEditTask(); showEditTaskModal = false;" #editTaskForm="ngForm">
           <div class="mb-3">
             <label for="selectEditTask" class="form-label">Seleccionar tarea</label>
-            <select id="selectEditTask" class="form-select" [(ngModel)]="editTask.id" name="id" required (change)="onSelectEditTask()">
+            <select id="selectEditTask" class="form-select form-select-sm" [(ngModel)]="editTask.id" name="id" required (change)="onSelectEditTask()">
               <option value="" disabled selected>Seleccionar tarea...</option>
               <option *ngFor="let t of frappeTasks" [value]="t.id">{{ t.name }}</option>
             </select>
           </div>
           <div class="mb-3">
             <label for="editTaskName" class="form-label">Nombre de la tarea</label>
-            <input id="editTaskName" type="text" name="name" [(ngModel)]="editTask.name" class="form-control" required />
+            <input id="editTaskName" type="text" name="name" [(ngModel)]="editTask.name" class="form-control form-control-sm" required />
           </div>
           <div class="mb-3">
             <label for="editTaskStart" class="form-label">Fecha de inicio</label>
-            <input id="editTaskStart" type="date" name="start" [(ngModel)]="editTask.start" class="form-control" required />
+            <input id="editTaskStart" type="date" name="start" [(ngModel)]="editTask.start" class="form-control form-control-sm" required />
           </div>
           <div class="mb-3">
             <label for="editTaskDuration" class="form-label">Duración (días)</label>
-            <input id="editTaskDuration" type="number" name="duration" [(ngModel)]="editTask.duration" class="form-control" min="1" required />
+            <input id="editTaskDuration" type="number" name="duration" [(ngModel)]="editTask.duration" class="form-control form-control-sm" min="1" required />
           </div>
           <div class="mb-3">
             <label for="editTaskProgress" class="form-label">Grado de avance (%)</label>
-            <input id="editTaskProgress" type="number" name="progress" [(ngModel)]="editTask.progress" class="form-control" min="0" max="100" required />
-              min="0" max="100" step="1" required />
+            <input id="editTaskProgress" type="number" name="progress" [(ngModel)]="editTask.progress" class="form-control form-control-sm" min="0" max="100" required />
           </div>
           <div class="mb-3">
             <label for="editTaskResponsible" class="form-label">Responsable</label>
-            <select id="editTaskResponsible" class="form-select" [(ngModel)]="editTask.responsible" name="responsible">
+            <select id="editTaskResponsible" class="form-select form-select-sm" [(ngModel)]="editTask.responsible" name="responsible">
               <option value="" disabled selected>Seleccionar responsable...</option>
               <option *ngFor="let responsible of responsibles" [value]="responsible.id">{{ responsible.nombre }} {{ responsible.apellido }}</option>
             </select>
@@ -111,30 +110,30 @@
           
           <div class="mb-3">
             <label for="taskName" class="form-label">Nombre de la tarea</label>
-            <input id="taskName" type="text" name="name" [(ngModel)]="newTask.name" class="form-control"
+            <input id="taskName" type="text" name="name" [(ngModel)]="newTask.name" class="form-control form-control-sm"
               placeholder="Nombre de la tarea" required />
           </div>
           
           <div class="mb-3">
             <label for="taskStart" class="form-label">Fecha de inicio</label>
-            <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start" class="form-control" required />
+            <input id="taskStart" type="date" name="start" [(ngModel)]="newTask.start" class="form-control form-control-sm" required />
           </div>
           
           <div class="mb-3">
             <label for="taskDuration" class="form-label">Duración (días)</label>
-            <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control"
+            <input id="taskDuration" type="number" name="duration" [(ngModel)]="newTask.duration" class="form-control form-control-sm"
               min="1" required />
           </div>
           
           <div class="mb-3">
             <label for="taskProgress" class="form-label">Grado de avance (%)</label>
-            <input id="taskProgress" type="number" name="progress" [(ngModel)]="newTask.progress" class="form-control"
+            <input id="taskProgress" type="number" name="progress" [(ngModel)]="newTask.progress" class="form-control form-control-sm"
               min="0" max="100" step="1" required />
           </div>
           
           <div class="mb-3">
             <label for="taskResponsible" class="form-label">Responsable</label>
-            <select id="taskResponsible" class="form-select" [(ngModel)]="newTask.responsible" name="responsible">
+            <select id="taskResponsible" class="form-select form-select-sm" [(ngModel)]="newTask.responsible" name="responsible">
               <option value="" disabled selected>Seleccionar responsable...</option>
               <option *ngFor="let responsible of responsibles" [value]="responsible.id">{{ responsible.nombre }} {{ responsible.apellido }}</option>
             </select>

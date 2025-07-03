@@ -123,11 +123,6 @@ export class TaskService {
     try {
       const taskToSend: any = { ...task }; // Crea una copia para no modificar el objeto original si es necesario
 
-      // Eliminar propiedades internas de dhtmlxGantt antes de actualizar
-      delete taskToSend['!nativeeditor_status'];
-      delete taskToSend['!nativeeditor_id']; // Eliminar la propiedad específica (si existe)
-      delete taskToSend['end_date']; // Eliminar la propiedad end_date
-
       // Mapear idResponsible si existe
       if (taskToSend.idResponsible) {
         taskToSend.idResponsible = Number(taskToSend.idResponsible);
