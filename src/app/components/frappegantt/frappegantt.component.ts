@@ -115,6 +115,9 @@ export class FrappeganttComponent implements OnInit {
     this.renderGantt();
   }
 
+  /**************************************************************
+   * Saltar hasta el dia de hoy en el Gantt
+   *************************************************************/  
   setToday() {
     console.log('Botón "Hoy" pulsado');
     if (this.gantt) {
