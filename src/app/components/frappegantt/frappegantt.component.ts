@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { TaskService } from '../../services/task.service';
+import { ResponsibleService } from '../../services/responsible.service';
 import { LinkService } from '../../services/link.service';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/project';
@@ -23,8 +24,8 @@ export class FrappeganttComponent implements OnInit {
 
   gantt: any;
   frappeTasks: any[] = [];
-  // Add responsible property to newTask
-  newTask = { name: '', start: '', duration: 1, progress: 0, responsible: '' };
+  // Ahora responsible es id (number|null)
+  newTask = { name: '', start: '', duration: 1, progress: 0, responsible: null as number | null };
   showNewProjectModal = false;
   newProject = { name: '', start: '', end: '' };
   showModal = false;
@@ -34,36 +35,56 @@ export class FrappeganttComponent implements OnInit {
   editProject = { id: '', nombre: '', start: '', end: ''};
   selectedProjectId: string = '';
   proyectos: { id: string, nombre: string, start?: string, end?: string }[] = [];
-  editTask = { id: '', name: '', start: '', duration: 1, progress: 0, responsible: '' };
-  responsibles: string[] = ['Usuario 1', 'Usuario 2', 'Usuario 3', 'Responsable A', 'Responsable B'];
+  editTask = { id: '', name: '', start: '', duration: 1, progress: 0, responsible: null as number | null };
+  responsibles: { id: number, nombre: string, apellido?: string, email?: string, telefono?: string }[] = [];
+  responsibleMap: { [key: string]: number } = {
+    'Usuario 1': 1,
+    'Usuario 2': 2,
+    'Usuario 3': 3,
+    'Responsable A': 4,
+    'Responsable B': 5
+  };
+  responsibleReverseMap: { [key: number]: string } = {
+    1: 'Usuario 1',
+    2: 'Usuario 2',
+    3: 'Usuario 3',
+    4: 'Responsable A',
+    5: 'Responsable B'
+  };
 
   constructor(
     private taskService: TaskService,
     private linkService: LinkService,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private responsibleService: ResponsibleService
   ) { }
 
   async ngOnInit() {
     try {
+      // Cargar responsables desde la tabla responsible
+      this.responsibles = await this.responsibleService.getAll();
       const proyectosBD = await this.projectService.getAll();
       this.proyectos = proyectosBD.map(p => ({ id: String(p.id), nombre: p.name, start: p.start_date, end: p.end_date }));
     } catch (error) {
-      console.error('Error al cargar proyectos:', error);
+      console.error('Error al cargar proyectos o responsables:', error);
     }
 
     // Cargar tareas cuando hay un proyecto activo
     if (this.selectedProjectId) {
       const tasks = await this.taskService.get();
       const links = await this.linkService.get();
-      this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
-        id: String(task.id),
-        name: task.text,
-        start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
-        end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
-        progress: (Number(task.progress) || 0) * 100,
-        dependencies: this.getDependencies(task.id, links),
-        responsible: task.responsible || ''
-      }));
+      this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => {
+        const responsibleObj = this.responsibles.find(r => r.id === task.idResponsible);
+        return {
+          id: String(task.id),
+          name: task.text,
+          start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
+          end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
+          progress: (Number(task.progress) || 0) * 100,
+          dependencies: this.getDependencies(task.id, links),
+          responsible: responsibleObj ? `${responsibleObj.nombre} ${responsibleObj.apellido || ''}`.trim() : ''
+        };
+      });
     } else {
       this.frappeTasks = [];
     }
@@ -77,20 +98,22 @@ export class FrappeganttComponent implements OnInit {
    ***********************************************************/
   onDeleteTask() {
     if (!this.editTask.id) return;
-    // Elimina la tarea de la base de datos y recarga la lista
     this.taskService.remove(Number(this.editTask.id))
       .then(async () => {
         const tasks = await this.taskService.get();
         const links = await this.linkService.get();
-        this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
-          id: String(task.id),
-          name: task.text,
-          start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
-          end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
-          progress: (Number(task.progress) || 0) * 100,
-          dependencies: this.getDependencies(task.id, links),
-          responsible: task.responsible || ''
-        }));
+        this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => {
+          const responsibleObj = this.responsibles.find(r => r.id === task.idResponsible);
+          return {
+            id: String(task.id),
+            name: task.text,
+            start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
+            end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
+            progress: (Number(task.progress) || 0) * 100,
+            dependencies: this.getDependencies(task.id, links),
+            responsible: responsibleObj ? `${responsibleObj.nombre} ${responsibleObj.apellido || ''}`.trim() : ''
+          };
+        });
         this.renderGantt();
       })
       .catch(error => {
@@ -98,7 +121,7 @@ export class FrappeganttComponent implements OnInit {
         alert('Error al eliminar la tarea. Ver consola para más detalles.');
       })
       .finally(() => {
-        this.editTask = { id: '', name: '', start: '', duration: 1, progress: 0, responsible: '' };
+        this.editTask = { id: '', name: '', start: '', duration: 1, progress: 0, responsible: null };
         this.showEditTaskModal = false;
       });
   }
@@ -113,29 +136,30 @@ async onSelectEditTask() {
     const t = this.frappeTasks.find(task => String(task.id) === String(this.editTask.id));
     if (t) {
       this.editTask.name = t.name;
-      this.editTask.responsible = t.responsible || '';
+      // Obtener el responsable real desde la base de datos (array de IDs)
       if (t && t.id) {
         const originalTask = await this.taskService.get();
         const dbTask = originalTask.find((task: any) => String(task.id) === String(t.id));
+        if (dbTask && dbTask.idResponsible) {
+          this.editTask.responsible = dbTask.idResponsible;
+        } else {
+          this.editTask.responsible = null;
+        }
         if (dbTask && dbTask.start_date) {
           let dateStr = String(dbTask.start_date);
-          //console.log(`---> Fecha original: ${dateStr}`);
-          // Si tiene 'T' o espacio, tomar solo la parte antes
           dateStr = dateStr.split('T')[0].split(' ')[0];
-          // Validar formato YYYY-MM-DD
           this.editTask.start = /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? dateStr : '';
         } else {
           this.editTask.start = '';
         }
       } else {
         this.editTask.start = '';
+        this.editTask.responsible = null;
       }
       // Calcula duración a partir de start y end si existe, solo usando strings para evitar desfases de zona horaria
       if (t.start && t.end) {
-        // Extraer solo la parte YYYY-MM-DD
         const startStr = String(t.start).split('T')[0].split(' ')[0];
         const endStr = String(t.end).split('T')[0].split(' ')[0];
-        // Calcular diferencia de días de forma inclusiva
         const [sy, sm, sd] = startStr.split('-').map(Number);
         const [ey, em, ed] = endStr.split('-').map(Number);
         const startUTC = Date.UTC(sy, sm - 1, sd);
@@ -145,14 +169,13 @@ async onSelectEditTask() {
       } else {
         this.editTask.duration = 1;
       }
-      // Mostrar el progreso como porcentaje en el formulario de edición
       this.editTask.progress = t.progress != null ? Math.round(Number(t.progress)) : 0;
     } else {
       this.editTask.name = '';
       this.editTask.start = '';
       this.editTask.duration = 1;
       this.editTask.progress = 0;
-      this.editTask.responsible = '';
+      this.editTask.responsible = null;
     }
   }
   /************************************************************************
@@ -161,9 +184,7 @@ async onSelectEditTask() {
    * Si no hay tarea seleccionada, no hace nada.
    ***********************************************************************/
   onEditTask() {
-    // Actualizar la tarea en la base de datos y recargar la lista
     if (!this.editTask.id) return;
-    // Evitar desfase de fechas: parsear manualmente la fecha (YYYY-MM-DD)
     let formattedStart = this.editTask.start;
     if (/^\d{4}-\d{2}-\d{2}/.test(this.editTask.start)) {
       formattedStart = this.editTask.start.split('T')[0].split(' ')[0];
@@ -175,23 +196,24 @@ async onSelectEditTask() {
       duration: this.editTask.duration,
       progress: Number(this.editTask.progress) / 100,
       idProject: this.selectedProjectId,
-      // Include responsible when updating task
-      responsible: this.editTask.responsible
+      idResponsible: this.editTask.responsible != null ? Number(this.editTask.responsible) : null
     };
     this.taskService.update(updatedTask)
       .then(async () => {
         const tasks = await this.taskService.get();
         const links = await this.linkService.get();
-        this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
-          id: String(task.id),
-          name: task.text,
-          start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
-          end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
-          progress: (Number(task.progress) || 0) * 100,
-          dependencies: this.getDependencies(task.id, links),
-          // Include responsible when mapping from service response
-          responsible: task.responsible || ''
-        }));
+        this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => {
+          const responsibleObj = this.responsibles.find(r => r.id === task.idResponsible);
+          return {
+            id: String(task.id),
+            name: task.text,
+            start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
+            end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
+            progress: (Number(task.progress) || 0) * 100,
+            dependencies: this.getDependencies(task.id, links),
+            responsible: responsibleObj ? `${responsibleObj.nombre} ${responsibleObj.apellido || ''}`.trim() : ''
+          };
+        });
         this.renderGantt();
       })
       .catch(error => {
@@ -199,8 +221,7 @@ async onSelectEditTask() {
         alert('Error al actualizar la tarea. Ver consola para más detalles.');
       })
       .finally(() => {
-        // Reset editTask responsible field
-        this.editTask = { ...this.editTask, responsible: '' };
+        this.editTask = { ...this.editTask, responsible: null };
       });
   }
 
@@ -339,31 +360,30 @@ async onSelectEditTask() {
       text: name,
       start_date: formattedStart,
       duration: duration,
-      // Guardar el progreso como decimal (0-1)
       progress: Number(progress) / 100,
       parent: 0,
       priority: null,
-      users: [],
       type: null,
       project_id: this.selectedProjectId,
-      // Include responsible when creating new task
-      responsible: this.newTask.responsible
+      idResponsible: this.newTask.responsible != null ? Number(this.newTask.responsible) : null
     };
     try {
       await this.taskService.insert(newTask);
       // Recargar todas las tareas del proyecto activo desde la base de datos y actualizar el Gantt
       const tasks = await this.taskService.get();
       const links = await this.linkService.get();
-      this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => ({
-        id: String(task.id),
-        name: task.text,
-        start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
-        end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
-        progress: (Number(task.progress) || 0) * 100,
-        dependencies: this.getDependencies(task.id, links),
-        // Include responsible when mapping from service response
-        responsible: task.responsible || ''
-      }));
+      this.frappeTasks = tasks.filter(task => String(task.project_id) === String(this.selectedProjectId)).map(task => {
+        const responsibleObj = this.responsibles.find(r => r.id === task.idResponsible);
+        return {
+          id: String(task.id),
+          name: task.text,
+          start: typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '',
+          end: this.calculateEndDate(typeof task.start_date === 'string' ? task.start_date.split(' ')[0] : '', task.duration),
+          progress: (Number(task.progress) || 0) * 100,
+          dependencies: this.getDependencies(task.id, links),
+          responsible: responsibleObj ? `${responsibleObj.nombre} ${responsibleObj.apellido || ''}`.trim() : ''
+        };
+      });
       this.renderGantt();
     } catch (error) {
       console.error('Error al guardar la tarea:', error);
@@ -383,13 +403,13 @@ async onSelectEditTask() {
       return;
     }
     // Also check if responsible is selected
-    if (!this.newTask.name || !this.newTask.start || !this.newTask.duration || !this.newTask.responsible) {
+    if (!this.newTask.name || !this.newTask.start || !this.newTask.duration || this.newTask.responsible == null) {
       alert('Por favor, complete todos los campos de la tarea, incluyendo el responsable.');
       return;
     }
     this.addTask(this.newTask.name, this.newTask.start, Number(this.newTask.duration), Number(this.newTask.progress));
     // Reset responsible field after submission
-    this.newTask = { name: '', start: '', duration: 1, progress: 0, responsible: '' };
+    this.newTask = { name: '', start: '', duration: 1, progress: 0, responsible: null };
   }
 
   /*********************************************************************

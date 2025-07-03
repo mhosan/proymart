@@ -81,7 +81,7 @@
             <label for="editTaskResponsible" class="form-label">Responsable</label>
             <select id="editTaskResponsible" class="form-select" [(ngModel)]="editTask.responsible" name="responsible">
               <option value="" disabled selected>Seleccionar responsable...</option>
-              <option *ngFor="let responsible of responsibles" [value]="responsible">{{ responsible }}</option>
+              <option *ngFor="let responsible of responsibles" [value]="responsible.id">{{ responsible.nombre }} {{ responsible.apellido }}</option>
             </select>
           </div>
           <div class="modal-footer">
@@ -136,7 +136,7 @@
             <label for="taskResponsible" class="form-label">Responsable</label>
             <select id="taskResponsible" class="form-select" [(ngModel)]="newTask.responsible" name="responsible">
               <option value="" disabled selected>Seleccionar responsable...</option>
-              <option *ngFor="let responsible of responsibles" [value]="responsible">{{ responsible }}</option>
+              <option *ngFor="let responsible of responsibles" [value]="responsible.id">{{ responsible.nombre }} {{ responsible.apellido }}</option>
             </select>
           </div>
           

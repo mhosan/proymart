@@ -6,8 +6,7 @@ export class Task {
     progress!: number;
     parent!: number;
     priority?: number;
-    users?: number[];
     type?: string;
     project_id?: number | string;
-    responsible?: string; // Added responsible field
+    idResponsible?: number; // Added idResponsible field
 }

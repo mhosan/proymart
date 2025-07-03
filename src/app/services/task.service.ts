@@ -44,9 +44,9 @@ export class TaskService {
         progress: item.progress || 0,
         parent: item.parent || 0,
         priority: item.priority,
-        users: item.users,
         type: item.type,
-        project_id: item.idProject // Usar el campo correcto de la base de datos
+        project_id: item.idProject, // Usar el campo correcto de la base de datos
+        idResponsible: item.idResponsible // Mapear correctamente
       }));
       console.log('TaskService.get() data from Supabase (transformed):', transformedData);
       return transformedData;
@@ -78,19 +78,12 @@ export class TaskService {
         taskToInsert.idProject = taskToInsert.project_id;
         delete taskToInsert.project_id;
       }
-
-      // Ensure users is an array of integers
-      if (taskToInsert.users !== null && taskToInsert.users !== undefined) {
-        if (!Array.isArray(taskToInsert.users)) {
-          // If it's not an array, wrap it in an array
-          taskToInsert.users = [taskToInsert.users];
-        }
-        // Ensure all elements in the array are integers (optional, but good practice)
-        taskToInsert.users = taskToInsert.users.map((userId: any) => parseInt(userId, 10)).filter((userId: number) => !isNaN(userId));
-      } else {
-        // If users is null or undefined, set it to an empty array
-        taskToInsert.users = [];
+      // Mapear idResponsible si existe
+      if (taskToInsert.idResponsible) {
+        taskToInsert.idResponsible = Number(taskToInsert.idResponsible);
       }
+      // Eliminar el campo users si existe
+      delete taskToInsert.users;
 
       console.log('Objeto de tarea FINAL que se enviará a Supabase:', taskToInsert);
       const insertedTask = await this.supabaseService.insertIntoTable('task', taskToInsert);
@@ -135,10 +128,10 @@ export class TaskService {
       delete taskToSend['!nativeeditor_id']; // Eliminar la propiedad específica (si existe)
       delete taskToSend['end_date']; // Eliminar la propiedad end_date
 
-      // La lógica anterior para 'responsibles' (plural) era incorrecta y fue eliminada.
-      // El objeto 'taskToSend' ya contiene la propiedad 'responsible' (string)
-      // que viene del componente y se pasará directamente a Supabase.
-
+      // Mapear idResponsible si existe
+      if (taskToSend.idResponsible) {
+        taskToSend.idResponsible = Number(taskToSend.idResponsible);
+      }
       await this.supabaseService.updateTableById('task', taskToSend.id, taskToSend);
     } catch (error) {
       console.error(`Error updating task with id ${task.id} in Supabase:`, error);
