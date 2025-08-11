@@ -1,14 +1,23 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { TaskService } from '../../services/task.service';
-import { ResponsibleService } from '../../services/responsible.service';
+import { ResponsibleService } from '../../services/responsible.service'; // Importar ResponsibleService
 import { LinkService } from '../../services/link.service';
 import { ProjectService } from '../../services/project.service';
 import { Project } from '../../models/project';
-import { Task } from '../../models/task';
-import { Link } from '../../models/link';
 import Gantt from 'frappe-gantt';
 import { FormsModule } from '@angular/forms';
-import { NgIf, NgStyle, NgFor } from '@angular/common'; 
+import { NgIf, NgStyle, NgFor } from '@angular/common';
+import { Link } from '../../models/link'; // Import the Link type
+
+/**
+ * Definir un tipo para la visualización del Gantt
+ */
+type ViewModeType = 'Day' | 'Week' | 'Month' | 'Year';
+
+// Definir un tipo personalizado para las tareas de Frappe Gantt que incluya la propiedad 'responsible'
+interface FrappeTask extends Gantt.Task {
+  responsible?: string;
+}
 
 @Component({
   selector: 'app-frappegantt',
@@ -22,9 +31,8 @@ import { NgIf, NgStyle, NgFor } from '@angular/common';
 export class FrappeganttComponent implements OnInit {
   @ViewChild('frappe_gantt_here', { static: true }) ganttContainer!: ElementRef;
 
-  gantt: any;
-  frappeTasks: any[] = [];
-  // Ahora responsible es id (number|null)
+  gantt!: Gantt;
+  frappeTasks: FrappeTask[] = [];
   newTask = { name: '', start: '', duration: 1, progress: 0, responsible: null as number | null };
   showNewProjectModal = false;
   newProject = { name: '', start: '', end: '' };
@@ -32,25 +40,14 @@ export class FrappeganttComponent implements OnInit {
   showEditTaskModal = false;
   showEditProjectModal = false;
   showSelectProjectModal = false;
-  editProject = { id: '', nombre: '', start: '', end: ''};
+  editProject = { id: '', nombre: '', start: '', end: '' };
   selectedProjectId: string = '';
   proyectos: { id: string, nombre: string, start?: string, end?: string }[] = [];
   editTask = { id: '', name: '', start: '', duration: 1, progress: 0, responsible: null as number | null };
-  responsibles: { id: number, nombre: string, apellido?: string, email?: string, telefono?: string }[] = [];
-  responsibleMap: { [key: string]: number } = {
-    'Usuario 1': 1,
-    'Usuario 2': 2,
-    'Usuario 3': 3,
-    'Responsable A': 4,
-    'Responsable B': 5
-  };
-  responsibleReverseMap: { [key: number]: string } = {
-    1: 'Usuario 1',
-    2: 'Usuario 2',
-    3: 'Usuario 3',
-    4: 'Responsable A',
-    5: 'Responsable B'
-  };
+  responsibles: { id: number, nombre: string, apellido: string, email: string, telefono: string }[] = [];
+  tiempoUnidades: ViewModeType = 'Month'; // Change the type to ViewModeType
+  today_button = false;
+
 
   constructor(
     private taskService: TaskService,
@@ -90,6 +87,45 @@ export class FrappeganttComponent implements OnInit {
     }
     this.renderGantt();
   }
+
+  /*********************************************************************
+   * 
+   * Renderiza el Gantt en el contenedor especificado.
+   * Limpia el contenedor antes de renderizar para evitar duplicados.
+   ********************************************************************/
+  renderGantt() {
+    // Limpia el contenedor antes de renderizar para evitar duplicados
+    this.ganttContainer.nativeElement.innerHTML = '';
+    this.gantt = new Gantt(this.ganttContainer.nativeElement, this.frappeTasks, {
+      view_mode: this.tiempoUnidades,
+      language: 'es',
+      on_click: (task: FrappeTask) => {
+        // No hacer nada en click simple
+      },
+      on_date_change: () => { },
+      on_progress_change: () => { },
+      on_view_change: () => { }
+    });
+  }
+
+  /**************************************************************
+   * setear unidades de tiempo del gantt en dias, semanas o meses
+   *************************************************************/
+  setTimeGantt() {
+    this.renderGantt();
+  }
+
+  /**************************************************************
+   * Saltar hasta el dia de hoy en el Gantt
+   *************************************************************/  
+  setToday() {
+    console.log('Botón "Hoy" pulsado');
+    if (this.gantt) {
+      console.log('Objeto Gantt:', this.gantt);
+      (this.gantt as any).scroll_current();
+    }
+  }
+
 
   /************************************************************
    * 
@@ -131,7 +167,7 @@ export class FrappeganttComponent implements OnInit {
    * Abre el modal para editar la tarea seleccionada.
    * Carga los datos de la tarea en el formulario de edición.
    ***********************************************************/
-async onSelectEditTask() {
+  async onSelectEditTask() {
     // Busca la tarea seleccionada y carga sus datos en el formulario
     const t = this.frappeTasks.find(task => String(task.id) === String(this.editTask.id));
     if (t) {
@@ -178,6 +214,7 @@ async onSelectEditTask() {
       this.editTask.responsible = null;
     }
   }
+
   /************************************************************************
    * 
    * Actualiza la tarea seleccionada en la base de datos y recarga el Gantt.
@@ -229,7 +266,7 @@ async onSelectEditTask() {
    * 
    * Abre el modal para seleccionar un proyecto.
    * Si no hay proyectos, muestra un mensaje.
-   ********************************************************************/  
+   ********************************************************************/
   async onSelectProject(): Promise<void> {
     // Si no hay proyecto seleccionado, limpiar selección y tareas
     if (!this.selectedProjectId) {
@@ -261,7 +298,7 @@ async onSelectEditTask() {
    * 
    * Abre el modal para crear un nuevo proyecto.
    * Limpia el formulario de creación de proyecto.
-   ********************************************************************/  
+   ********************************************************************/
   async onEditProject() {
     if (!this.editProject.id || !this.editProject.start || !this.editProject.end) return;
     // Guardar siempre en formato 'YYYY-MM-DD' puro (sin hora)
@@ -299,7 +336,7 @@ async onSelectEditTask() {
       }
     }
     // Limpia el formulario
-    this.editProject = { id: '', nombre: '', start: '', end: ''};
+    this.editProject = { id: '', nombre: '', start: '', end: '' };
   }
 
   /*********************************************************************
@@ -341,7 +378,7 @@ async onSelectEditTask() {
    * 
    * Agrega una nueva tarea al proyecto activo.
    * Si no hay proyecto activo, muestra un mensaje de alerta.
-   ********************************************************************/  
+   ********************************************************************/
   async addTask(name: string, start: string, duration: number, progress: number) {
     // No permitir alta de tareas si no hay proyecto activo
     if (!this.selectedProjectId) {
@@ -396,7 +433,7 @@ async onSelectEditTask() {
    * Maneja el envío del formulario para agregar una nueva tarea.
    * Valida que haya un proyecto activo y que los campos de la tarea
    * estén completos.
-   ********************************************************************/  
+   ********************************************************************/
   onSubmit() {
     if (!this.selectedProjectId) {
       alert('Debe seleccionar un proyecto activo antes de agregar tareas.');
@@ -412,25 +449,6 @@ async onSelectEditTask() {
     this.newTask = { name: '', start: '', duration: 1, progress: 0, responsible: null };
   }
 
-  /*********************************************************************
-   * 
-   * Renderiza el Gantt en el contenedor especificado.
-   * Limpia el contenedor antes de renderizar para evitar duplicados.
-   ********************************************************************/  
-  renderGantt() {
-    // Limpia el contenedor antes de renderizar para evitar duplicados
-    this.ganttContainer.nativeElement.innerHTML = '';
-    this.gantt = new Gantt(this.ganttContainer.nativeElement, this.frappeTasks, {
-      view_mode: 'Day',
-      language: 'es',
-      on_click: (task: any) => {
-        // No hacer nada en click simple
-      },
-      on_date_change: () => { },
-      on_progress_change: () => { },
-      on_view_change: () => { }
-    });
-  }
 
   /*********************************************************************
    * 
@@ -456,7 +474,7 @@ async onSelectEditTask() {
    * Obtiene las dependencias de una tarea a partir de los enlaces.
    * Devuelve un string con los IDs de las tareas dependientes, 
    * separados por comas.
-   ********************************************************************/  
+   ********************************************************************/
   getDependencies(taskId: number, links: Link[]): string {
     return links.filter(l => l.target === taskId).map(l => String(l.source)).join(',');
   }
