@@ -39,6 +39,19 @@
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ],
             "browser": "src/main.ts"
+            ,
+            "allowedCommonJsDependencies": [
+              "leaflet",
+              "axios-retry",
+              "p-retry",
+              "p-queue",
+              "ansi-styles",
+              "decamelize",
+              "camelcase",
+              "base64-js",
+              "ws",
+              "semver"
+            ]
           },
           "configurations": {
             "production": {
