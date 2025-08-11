@@ -12,3 +12,61 @@
     margin-left: 3px;
 }
 
+/* Estilo para marcador circular personalizado */
+.custom-circle-icon .marker-dot {
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 35% 35%, #4caf50 0%, #087f23 65%, #005914 100%);
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0,0,0,0.6);
+    position: relative;
+}
+
+/* Marcador HTML personalizado tipo pin */
+.html-pin {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(145deg,#2E7DFF,#114A99);
+    border-radius: 50% 50% 50% 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.45);
+    border: 2px solid #ffffff;
+}
+.html-pin:after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-top-color: #2E7DFF;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+}
+.html-pin .inner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+.custom-circle-icon .marker-dot::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -35%);
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-top-color: #087f23;
+    border-bottom: 0;
+    margin-top: 10px;
+}
+

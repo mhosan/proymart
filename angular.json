@@ -23,11 +23,6 @@
             "tsConfig": "tsconfig.app.json",
              "baseHref": "/",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public",
-                "output": "/assets/leaflet/"
-              },
               "src/assets",
               {
                 "glob": ".htaccess",

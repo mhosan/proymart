@@ -1,14 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
+import { GeolocalizacionesService } from '../../services/geolocalizaciones.service';
 
-/* const baseHref = document.getElementsByTagName('base')[0]?.getAttribute('href') || '/';
-const normalizedBaseHref = baseHref.endsWith('/') ? baseHref : baseHref + '/';
-const leafletAssets = `${normalizedBaseHref}assets/leaflet/`;
-(L.Icon.Default as any).mergeOptions({
-  iconRetinaUrl: `${leafletAssets}marker-icon-2x.png`,
-  iconUrl: `${leafletAssets}marker-icon.png`,
-  shadowUrl: `${leafletAssets}marker-shadow.png`
-}); */
+
+
+
+
+
+// Icono azul celeste SVG embebido, igual para todos los marcadores
+const celestePinSvg = `<svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
+  <defs><filter id="shadow" x="-20%" y="-10%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/><feOffset dy="1"/><feComponentTransfer><feFuncA type="linear" slope="0.4"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <path filter="url(#shadow)" fill="#2E7DFF" stroke="#114A99" stroke-width="2" d="M12.5 1C6.2 1 1 6.11 1 12.33c0 8.26 9.54 20.65 11.55 23.21.19.24.56.24.75 0 2-2.56 11.7-14.95 11.7-23.21C25 6.11 18.8 1 12.5 1Z"/>
+  <circle cx="12.5" cy="12.5" r="5.2" fill="#fff" stroke="#114A99" stroke-width="1.5" />
+</svg>`;
+
+const celesteDivIcon = L.divIcon({
+  className: 'leaflet-celeste-pin',
+  html: celestePinSvg,
+  iconSize: [25,41],
+  iconAnchor: [12,41],
+  tooltipAnchor: [0,-34]
+});
+
+function addMarkerToMap(map: L.Map, lat: number, lon: number) {
+  L.marker([lat, lon], { zIndexOffset: 800, icon: celesteDivIcon })
+    .addTo(map)
+    .bindTooltip(`${lat.toFixed(5)}, ${lon.toFixed(5)}`, { direction: 'top', offset: [0, -12] });
+}
 
 @Component({
     selector: 'app-mapa',
@@ -16,7 +34,7 @@ const leafletAssets = `${normalizedBaseHref}assets/leaflet/`;
     templateUrl: './mapa.component.html',
     styleUrl: './mapa.component.css'
 })
-export class MapaComponent implements OnInit {
+export class MapaComponent implements OnInit, OnDestroy {
     private map!: L.Map;
     public esriSat: any;
     public googleMaps: any;
@@ -30,9 +48,28 @@ export class MapaComponent implements OnInit {
     public googleSat: any;
     public osm: any;
 
+    private unsubscribeGeoloc: (() => void) | null = null;
+
+    constructor(private geolocSrv: GeolocalizacionesService) {}
+
     ngOnInit(): void {
-    this.initMap();
-  }
+      this.initMap();
+      // Carga inicial de registros existentes
+      this.geolocSrv.fetchExistingLocations().then(list => {
+        list.forEach(g => addMarkerToMap(this.map, g.latitud, g.longitud));
+      });
+      // Suscripción realtime mínima a nuevas geolocalizaciones
+      this.unsubscribeGeoloc = this.geolocSrv.subscribeToNewLocations(geo => {
+        // Marcador con zIndex elevado para garantizar visibilidad sobre capas
+        addMarkerToMap(this.map, geo.latitud, geo.longitud);
+      });
+    }
+
+    ngOnDestroy(): void {
+      if (this.unsubscribeGeoloc) {
+        this.unsubscribeGeoloc();
+      }
+    }
 
   private initMap(): void {
     this.map = L.map('map').setView([-34.6037, -58.3816], 13); // Buenos Aires
